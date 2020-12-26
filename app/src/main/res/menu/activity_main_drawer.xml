@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/test"
+            android:title="News"
+            >
+            <menu>
+            <item
+                android:id="@+id/nav_news_business"
+                android:icon="@drawable/ic_baseline_business_center_24"
+                android:title="Business" />
+            <item
+                android:id="@+id/nav_news_entertainment"
+                android:icon="@drawable/ic_baseline_sports_esports_24"
+                android:title="Entertainment" />
+
+            <item
+                android:id="@+id/nav_news_general"
+                android:icon="@drawable/ic_baseline_dynamic_feed_24"
+                android:title="General" />
+
+            <item
+                android:id="@+id/nav_news_health"
+                android:icon="@drawable/ic_baseline_local_hospital_24"
+                android:title="Health" />
+
+            <item
+                android:id="@+id/nav_news_science"
+                android:icon="@drawable/ic_baseline_insert_chart_outlined_24"
+                android:title="Science" />
+
+            <item
+                android:id="@+id/nav_news_sports"
+                android:icon="@drawable/ic_baseline_sports_24"
+                android:title="Sports" />
+
+            <item
+                android:id="@+id/nav_news_technology"
+                android:icon="@drawable/ic_baseline_memory_24"
+                android:title="Technology" />
+            </menu>
+
+
+        </item>
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="@string/menu_home" />
+        <item
+            android:id="@+id/nav_gallery"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/menu_gallery" />
+
+        <item
+        android:id="@+id/nav_slideshow"
+        android:icon="@drawable/ic_menu_slideshow"
+        android:title="@string/menu_slideshow" />
+
+    </group>
+</menu>
