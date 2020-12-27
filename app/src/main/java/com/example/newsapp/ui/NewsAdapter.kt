@@ -1,6 +1,8 @@
 package com.example.newsapp.ui
 
-import android.graphics.BitmapFactory
+import android.content.res.Resources
+import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,9 +10,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.Target
 import com.example.newsapp.R
 import com.example.newsapp.news.Article
-import java.net.URL
+import kotlin.math.roundToInt
 
 
 class NewsAdapter (private val mArticles: ArrayList<Article>) : RecyclerView.Adapter<NewsAdapter.ViewHolder>()
@@ -20,11 +23,11 @@ class NewsAdapter (private val mArticles: ArrayList<Article>) : RecyclerView.Ada
     inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
         // Your holder should contain and initialize a member variable
         // for any view that will be set as you render a row
-        val titleTextView = itemView.findViewById<TextView>(R.id.title)
-        val descriptionTextView = itemView.findViewById<TextView>(R.id.description)
-        val sourceTextView = itemView.findViewById<TextView>(R.id.source)
-        val authorTextView = itemView.findViewById<TextView>(R.id.author)
-        val imageView = itemView.findViewById<ImageView>(R.id.imageView)
+        val titleTextView: TextView = itemView.findViewById(R.id.title)
+        val descriptionTextView: TextView = itemView.findViewById(R.id.description)
+        val sourceTextView: TextView = itemView.findViewById(R.id.source)
+        //val authorTextView = itemView.findViewById<TextView>(R.id.author)
+        val imageView: ImageView = itemView.findViewById(R.id.imageView)
     }
 
     // ... constructor and member variables
@@ -33,7 +36,7 @@ class NewsAdapter (private val mArticles: ArrayList<Article>) : RecyclerView.Ada
         val context = parent.context
         val inflater = LayoutInflater.from(context)
         // Inflate the custom layout
-        val contactView = inflater.inflate(R.layout.item_news, parent, false)
+        val contactView = inflater.inflate(R.layout.item_news_larger, parent, false)
         // Return a new holder instance
         return ViewHolder(contactView)
     }
@@ -49,18 +52,44 @@ class NewsAdapter (private val mArticles: ArrayList<Article>) : RecyclerView.Ada
         val descriptionTextView = viewHolder.descriptionTextView
         descriptionTextView.text = article.description
 
-        val authorTextView = viewHolder.authorTextView
-        authorTextView.text = article.author
+        //val authorTextView = viewHolder.authorTextView
+        //authorTextView.text = article.author
 
         val sourceTextView = viewHolder.sourceTextView
         sourceTextView.text = article.source?.name
 
+        val displayMetrics = DisplayMetrics()
+
+        val height = displayMetrics.heightPixels
+        val width = displayMetrics.widthPixels
+
         val imageView = viewHolder.imageView
-        Glide.with(viewHolder.itemView).load(article.urlToImage).into(imageView);
+
+        val dip = 200f
+
+        val r: Resources = viewHolder.itemView.resources
+        val px = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dip,
+            r.getDisplayMetrics()
+        )
+
+        Glide.with(viewHolder.itemView)
+            .load(article.urlToImage)
+           // .error(R.drawable.ic_baseline_memory_24)
+            .placeholder(R.drawable.ic_baseline_wallpaper_24)
+            .override(Target.SIZE_ORIGINAL, px.roundToInt())
+          //  .override(100 , 100)
+            .into(imageView);
     }
 
     // Returns the total count of items in the list
     override fun getItemCount(): Int {
         return mArticles.size
+    }
+
+    fun getItems() : ArrayList<Article>
+    {
+        return ArrayList(this.mArticles)
     }
 }

@@ -31,8 +31,7 @@ class MainActivity : AppCompatActivity() {
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener { view ->
 
-                var na:NewsAPI= NewsAPI()
-                na.GetTopHeadlines(NewsAPI.Companion.Countries.Slovakia,NewsAPI.Companion.Categories.Science, object: NewsAPI.ReturnCallback{
+                NewsAPI.GetTopHeadlines(NewsAPI.Countries.Slovakia,NewsAPI.Categories.Science, object: NewsAPI.ReturnCallback{
                     override fun callback(headlines: TopHeadlinesResult?) {
                         println(headlines)
                     }

@@ -7,31 +7,28 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
-class NewsAPI {
+object NewsAPI {
     private var onRequestCompleteListener : OnRequestCompleteListener? =null
+    val baseURL: String = "https://newsapi.org/v2/"
+    val apiKey: String = "76ff51a9aa11451f93dfe57aedb57586"
 
-    companion object{
-        val baseURL: String = "https://newsapi.org/v2/"
-        val apiKey: String = "76ff51a9aa11451f93dfe57aedb57586"
+    enum class Countries(val code: String) {
+        // ae ar at au be bg br ca ch cn co cu cz de eg fr gb gr hk hu id ie il in it jp kr lt lv ma mx my ng nl no nz ph pl pt ro rs ru sa se sg si sk th tr tw ua us ve za
+        Czechia("cz"),
+        Slovakia("sk"),
+        USA("us")
+    }
 
-        enum class Countries(val code: String) {
-            // ae ar at au be bg br ca ch cn co cu cz de eg fr gb gr hk hu id ie il in it jp kr lt lv ma mx my ng nl no nz ph pl pt ro rs ru sa se sg si sk th tr tw ua us ve za
-            Czechia("cz"),
-            Slovakia("sk"),
-            USA("us")
-        }
-
-        enum class Categories() {
-            //business entertainment general health science sports technology
-            Business,
-            Entertainment,
-            General,
-            Health,
-            Science,
-            Sports,
-            Technology,
-            None
-        }
+    enum class Categories() {
+        //business entertainment general health science sports technology
+        Business,
+        Entertainment,
+        General,
+        Health,
+        Science,
+        Sports,
+        Technology,
+        None
     }
 
     private fun getRequest(request: Request, callback: OnRequestCompleteListener)
@@ -64,11 +61,11 @@ class NewsAPI {
         fun callback(headlines:TopHeadlinesResult?)
     }
 
-    fun GetTopHeadlines(country:Countries, category:Categories,callback:ReturnCallback
+    fun GetTopHeadlines(country: Countries, category: Categories, callback:ReturnCallback
     //todo on return callback
     ) {
         var categoryStr = "&category=$category"
-        if(category==Categories.None)
+        if(category== Categories.None)
             categoryStr=""
 
         val request = Request.Builder()
