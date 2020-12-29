@@ -29,7 +29,7 @@ class NewsFragment : Fragment() {
     private lateinit var list: RecyclerView
     private lateinit var mAdapter : NewsAdapter
 
-    private val useDummyData = true
+    private val useDummyData = false
 
     private fun getDummyData() : ArrayList<Article>
     {
@@ -78,6 +78,16 @@ class NewsFragment : Fragment() {
                             mAdapter = headlines.articles?.let {
                                 NewsAdapter(it)
                             }!!
+                            mAdapter.setOnItemClickListener(object: NewsAdapter.OnItemClickListener{
+                                override fun onItemClick(itemView: View?, position: Int) {
+                                    var items = mAdapter.getItems()
+                                    var url = items[position].url
+                                    if(url != null && url.isNotEmpty()) {
+                                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                        startActivity(browserIntent)
+                                    }
+                                }
+                            })
                             mAdapter.notifyDataSetChanged()
                             list.adapter = mAdapter
                         }
@@ -130,7 +140,7 @@ class NewsFragment : Fragment() {
             override fun onItemClick(itemView: View?, position: Int) {
                 var items = mAdapter.getItems()
                 var url = items[position].url
-                if(url != null && !url.isEmpty()) {
+                if(url != null && url.isNotEmpty()) {
                     val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                     startActivity(browserIntent)
                 }
