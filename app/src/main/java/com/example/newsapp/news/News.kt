@@ -2,6 +2,8 @@ package com.example.newsapp.news
 
 import android.os.Parcel
 import android.os.Parcelable
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 
 data class Source(var id:String?=null , var name:String?=null) : Parcelable {
     constructor(parcel: Parcel) : this(
@@ -42,14 +44,16 @@ data class Article(
     //
 ) : Parcelable
 {
-    /*val datetime: DateTime? by lazy {
-        if(publishedAt == null) return@lazy null
 
-        return@lazy DateTime.parse(
+    val datetime: DateTime?
+    get(){
+        if(publishedAt == null) return null
+        return DateTime.parse(
             publishedAt,
-            DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ")
+            DateTimeFormat.forPattern(DatetimePattern)
         )
-    }*/
+    }
+
     constructor(parcel: Parcel) : this(
         parcel.readParcelable(Source::class.java.classLoader),
         parcel.readString(),
@@ -85,12 +89,9 @@ data class Article(
         override fun newArray(size: Int): Array<Article?> {
             return arrayOfNulls(size)
         }
+
+        const val DatetimePattern = "yyyy-MM-dd'T'HH:mm:ssZ"
     }
 
 }
 
-data class TopHeadlinesResult(
-    var status: String?=null,
-    var totalResults: Integer? = null,
-    var articles: ArrayList<Article>? = null
-)

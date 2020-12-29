@@ -1,18 +1,19 @@
 package com.example.newsapp.news
 
 import android.content.res.Resources
-import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.Target
 import com.example.newsapp.R
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
 
@@ -38,6 +39,7 @@ class NewsAdapter (private val mArticles: ArrayList<Article>) : RecyclerView.Ada
         val titleTextView: TextView = itemView.findViewById(R.id.title)
         val descriptionTextView: TextView= itemView.findViewById(R.id.description)
         val sourceTextView: TextView= itemView.findViewById(R.id.source)
+        val datetimeTextView: TextView= itemView.findViewById(R.id.datetime)
         val imageView: ImageView= itemView.findViewById(R.id.imageView)
 
         init {
@@ -92,13 +94,10 @@ class NewsAdapter (private val mArticles: ArrayList<Article>) : RecyclerView.Ada
         val sourceTextView = viewHolder.sourceTextView
         sourceTextView.text = article.source?.name
 
-        val displayMetrics = DisplayMetrics()
-
-        val height = displayMetrics.heightPixels
-        val width = displayMetrics.widthPixels
+        val datetimeTextView = viewHolder.datetimeTextView
+        datetimeTextView.text = article.datetime?.toString(DateTimeFormat.shortDateTime());
 
         val imageView = viewHolder.imageView
-
         val dip = 200f
 
         val r: Resources = viewHolder.itemView.resources

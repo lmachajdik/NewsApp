@@ -23,7 +23,7 @@ import kotlin.collections.ArrayList
 
 class SharedViewModel : ViewModel() {
     var news : ArrayList<Article> = ArrayList()
-    var hashtable =Hashtable<String, ArrayList<Article>>()
+    var topHeadlines =Hashtable<String, ArrayList<Article>>()
 }
 /**
  * A fragment representing a list of Items.
@@ -33,12 +33,10 @@ abstract class NewsFragment : Fragment() {
     private lateinit var list: RecyclerView
     private lateinit var mAdapter : NewsAdapter
 
-    protected var newsCountry =
-        NewsAPI.Countries.Slovakia
-    protected var newsCategory =
-        NewsAPI.Categories.Science
+    protected var newsCountry = NewsAPI.Countries.Slovakia
+    protected var newsCategory = NewsAPI.Categories.None
 
-    private val useDummyData = true
+    private val useDummyData = false
 
     private fun getDummyData() : ArrayList<Article>
     {
@@ -57,6 +55,8 @@ abstract class NewsFragment : Fragment() {
             "https://cdn.cnn.com/cnnnext/dam/assets/201227072434-01-pope-county-arkansas-murders-super-tease.jpg"
         )
 
+        var q = 2000;
+
         for (u in strings) {
 
 
@@ -71,6 +71,7 @@ abstract class NewsFragment : Fragment() {
             //"https://g.foolcdn.com/editorial/images/605979/family-watching-tv-getty-6217.jpg"
             a.url =
                 "https://www.fool.com/investing/2020/12/26/got-3000-these-3-tech-stocks-could-make-you-rich-i/"
+            a.publishedAt= (++q).toString() + "-12-03T22:00:00Z"
             headlines.articles?.add(a)
         }
         return headlines.articles!!
@@ -78,8 +79,8 @@ abstract class NewsFragment : Fragment() {
 
     private fun fetchNewsFromApi(model: SharedViewModel)
     {
-        if(model.hashtable.keys.contains(newsCategory.name))
-            model.hashtable.remove(newsCategory.name)
+        if(model.topHeadlines.keys.contains(newsCategory.name))
+            model.topHeadlines.remove(newsCategory.name)
 
         NewsAPI.GetTopHeadlines(
             newsCountry,
@@ -88,7 +89,7 @@ abstract class NewsFragment : Fragment() {
                 override fun callback(headlines: TopHeadlinesResult?) {
                     if (headlines != null) {
                         activity?.runOnUiThread {
-                            model.hashtable.put(newsCategory.name, headlines.articles!!)
+                            model.topHeadlines.put(newsCategory.name, headlines.articles!!)
                             //model.news = headlines.articles!!
                             mAdapter = headlines.articles?.let {
                                 NewsAdapter(it)
@@ -144,29 +145,29 @@ abstract class NewsFragment : Fragment() {
 
         model = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
-        if(!model.hashtable.containsKey(newsCategory.name))
-            model.hashtable.put(newsCategory.name, ArrayList())
+        if(!model.topHeadlines.containsKey(newsCategory.name))
+            model.topHeadlines.put(newsCategory.name, ArrayList())
 
         if (savedInstanceState != null) { //retrieve data from orientation change
             //model.news = savedInstanceState.getParcelableArrayList(ITEMS_KEY)!!
-            model.hashtable.put(newsCategory.name,savedInstanceState.getParcelableArrayList(
+            model.topHeadlines.put(newsCategory.name,savedInstanceState.getParcelableArrayList(
                 ITEMS_KEY
             )!!)
         }
-        else if(model.hashtable.get(newsCategory.name)?.count()  == 0) { //retrieve data from fragment change
+        else if(model.topHeadlines.get(newsCategory.name)?.count()  == 0) { //retrieve data from fragment change
             if(useDummyData) {
-                model.hashtable.put(newsCategory.name,getDummyData())
+                model.topHeadlines.put(newsCategory.name,getDummyData())
                // model.news = getDummyData()
             }
             else
                 fetchNewsFromApi(model)
         }
 
-        if(!model.hashtable.containsKey(newsCategory.name))
-            model.hashtable.put(newsCategory.name, ArrayList())
+        if(!model.topHeadlines.containsKey(newsCategory.name))
+            model.topHeadlines.put(newsCategory.name, ArrayList())
 
         mAdapter =
-            NewsAdapter(model.hashtable.get(newsCategory.name)!!)
+            NewsAdapter(model.topHeadlines.get(newsCategory.name)!!)
 
        // mAdapter = NewsAdapter(model.news)
         mAdapter.setOnItemClickListener(object:

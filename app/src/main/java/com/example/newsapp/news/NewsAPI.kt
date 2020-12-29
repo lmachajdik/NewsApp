@@ -27,7 +27,6 @@ object NewsAPI {
     }
 
     enum class Categories() {
-        //business entertainment general health science sports technology
         Business,
         Entertainment,
         General,
