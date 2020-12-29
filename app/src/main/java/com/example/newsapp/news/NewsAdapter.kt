@@ -1,6 +1,8 @@
-package com.example.newsapp.ui
+package com.example.newsapp.news
 
+import android.content.Intent
 import android.content.res.Resources
+import android.net.Uri
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -12,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.Target
 import com.example.newsapp.R
-import com.example.newsapp.news.Article
 import kotlin.math.roundToInt
 
 
@@ -32,17 +33,26 @@ class NewsAdapter (private val mArticles: ArrayList<Article>) : RecyclerView.Ada
 
     // ... constructor and member variables
     // Usually involves inflating a layout from XML and returning the holder
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val context = parent.context
         val inflater = LayoutInflater.from(context)
         // Inflate the custom layout
         val contactView = inflater.inflate(R.layout.item_news_larger, parent, false)
+        contactView.setOnClickListener {
+            println(it)
+            //position
+            /*val itemPosition: Int = .getChildLayoutPosition(contactView)
+            val item: Article = getItem(itemPosition)
+            val browserIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse(item.url))
+            context.startActivity(browserIntent)*/
+        }
         // Return a new holder instance
         return ViewHolder(contactView)
     }
 
     // Involves populating data into the item through holder
-    override fun onBindViewHolder(viewHolder: NewsAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         // Get the data model based on position
         val article: Article = mArticles.get(position)
         // Set item views based on your views and data model
@@ -90,6 +100,11 @@ class NewsAdapter (private val mArticles: ArrayList<Article>) : RecyclerView.Ada
 
     fun getItems() : ArrayList<Article>
     {
-        return ArrayList(this.mArticles)
+        return this.mArticles
+    }
+
+    fun getItem(position: Int) : Article
+    {
+        return mArticles[position]
     }
 }

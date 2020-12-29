@@ -1,37 +1,41 @@
-package com.example.newsapp.ui
+package com.example.newsapp.news
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration
+import androidx.recyclerview.widget.SnapHelper
 import com.example.newsapp.R
-import com.example.newsapp.news.Article
-import com.example.newsapp.news.NewsAPI
-import com.example.newsapp.news.Source
-import com.example.newsapp.news.TopHeadlinesResult
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
+
+class SharedViewModel : ViewModel() {
+    var news : ArrayList<Article> = ArrayList()
+}
 /**
  * A fragment representing a list of Items.
  */
 class NewsFragment : Fragment() {
-
     private var columnCount = 1
     private lateinit var list: RecyclerView
     private lateinit var mAdapter : NewsAdapter
 
     private val useDummyData = true
 
-    fun setDummyData()
+    private fun getDummyData() : ArrayList<Article>
     {
         var headlines : TopHeadlinesResult = TopHeadlinesResult()
         headlines.articles = ArrayList()
 
         val strings = arrayOf(
-            "invalid url",
+            //"invalid url",
             "https://www.gannett-cdn.com/presto/2020/12/23/USAT/ebfbf052-9030-4f19-af89-841dc435c9bd-WW84-09854r.jpg?crop=2279,1282,x0,y0&width=1600&height=800&fit=bounds",
             "https://cdn.cnn.com/cnnnext/dam/assets/201222070325-02-us-capitol-1221-super-tease.jpg",
             "https://image.cnbcfm.com/api/v1/image/106815140-1608664034954-ubs_weekly_restaurant_revenue.PNG?v=1608664055",
@@ -52,25 +56,33 @@ class NewsFragment : Fragment() {
                 "Content and moreee.. to fill some space like content would"
             )
             a.urlToImage = u
-                //"https://g.foolcdn.com/editorial/images/605979/family-watching-tv-getty-6217.jpg"
+            //"https://g.foolcdn.com/editorial/images/605979/family-watching-tv-getty-6217.jpg"
             a.url =
                 "https://www.fool.com/investing/2020/12/26/got-3000-these-3-tech-stocks-could-make-you-rich-i/"
             headlines.articles?.add(a)
         }
-        mAdapter = headlines.articles?.let { NewsAdapter(it) }!!
-        list.adapter = mAdapter
+        return headlines.articles!!
     }
 
-    fun fetchNewsFromApi()
+    private fun fetchNewsFromApi(model: SharedViewModel)
     {
         NewsAPI.GetTopHeadlines(
             NewsAPI.Countries.Slovakia,
             NewsAPI.Categories.Science, object : NewsAPI.ReturnCallback {
                 override fun callback(headlines: TopHeadlinesResult?) {
                     if (headlines != null) {
+                        activity?.runOnUiThread{
+                            model.news = headlines.articles!!
+                            mAdapter = headlines.articles?.let {
+                                NewsAdapter(
+                                    it
+                                )
+                            }!!
 
-                        mAdapter = headlines.articles?.let { NewsAdapter(it) }!!
-                        list.adapter = mAdapter
+                            mAdapter.notifyDataSetChanged()
+
+                            list.adapter = mAdapter
+                        }
                     }
                 }
 
@@ -84,6 +96,7 @@ class NewsFragment : Fragment() {
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
         }
+
     }
 
     override fun onCreateView(
@@ -92,33 +105,41 @@ class NewsFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_news_list, container, false)
         list = view.findViewById(R.id.list)
+        val itemDecoration: ItemDecoration =
+            DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+        list.addItemDecoration(itemDecoration)
 
-        if (savedInstanceState != null) {
-            val arr: ArrayList<Article> = savedInstanceState.getParcelableArrayList(ITEMS_KEY)!!
-            mAdapter = NewsAdapter(arr)
-            list.adapter = mAdapter
-        } else if (view is RecyclerView) {
+        val snapHelper: SnapHelper = LinearSnapHelper()
+        snapHelper.attachToRecyclerView(list)
 
-            if(useDummyData)
-                setDummyData()
+        list.itemAnimator = SlideInUpAnimator()
+        //TODO on item click listener
+
+        val model = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+
+        if (savedInstanceState != null) { //retrieve data from orientation change
+            model.news = savedInstanceState.getParcelableArrayList(ITEMS_KEY)!!
+        }
+        else if(model.news.count() == 0) { //retrieve data from fragment change
+            if(useDummyData) {
+                model.news = getDummyData()
+            }
             else
-                fetchNewsFromApi()
+                fetchNewsFromApi(model)
+        }
 
+        mAdapter = NewsAdapter(model.news)
+        list.adapter = mAdapter
+/*
+        if (view is RecyclerView) {
             with(view) {
                 layoutManager = when {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
             }
-        }
+        }*/
         return view
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        if (savedInstanceState != null) {
-            //Restore the fragment's state here
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -128,16 +149,6 @@ class NewsFragment : Fragment() {
 
     companion object {
         const val ITEMS_KEY = "list"
-        // TODO: Customize parameter argument names
         const val ARG_COLUMN_COUNT = "column-count"
-
-        // TODO: Customize parameter initialization
-        @JvmStatic
-        fun newInstance(columnCount: Int) =
-            NewsFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_COLUMN_COUNT, columnCount)
-                }
-            }
     }
 }
