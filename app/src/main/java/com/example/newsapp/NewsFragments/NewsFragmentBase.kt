@@ -1,4 +1,4 @@
-package com.example.newsapp.news
+package com.example.newsapp.NewsFragments
 
 import android.content.Intent
 import android.net.Uri
@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.recyclerview.widget.SnapHelper
 import com.example.newsapp.R
+import com.example.newsapp.news.*
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import java.util.*
 import kotlin.collections.ArrayList
@@ -32,14 +33,17 @@ abstract class NewsFragment : Fragment() {
     private lateinit var list: RecyclerView
     private lateinit var mAdapter : NewsAdapter
 
-    protected var newsCountry = NewsAPI.Countries.Slovakia
-    protected var newsCategory = NewsAPI.Categories.Science
+    protected var newsCountry =
+        NewsAPI.Countries.Slovakia
+    protected var newsCategory =
+        NewsAPI.Categories.Science
 
-    private val useDummyData = false
+    private val useDummyData = true
 
     private fun getDummyData() : ArrayList<Article>
     {
-        var headlines : TopHeadlinesResult = TopHeadlinesResult()
+        var headlines : TopHeadlinesResult =
+            TopHeadlinesResult()
         headlines.articles = ArrayList()
 
         val strings = arrayOf(
@@ -79,21 +83,24 @@ abstract class NewsFragment : Fragment() {
 
         NewsAPI.GetTopHeadlines(
             newsCountry,
-            newsCategory, object : NewsAPI.ReturnCallback {
+            newsCategory,
+            object : NewsAPI.ReturnCallback {
                 override fun callback(headlines: TopHeadlinesResult?) {
                     if (headlines != null) {
-                        activity?.runOnUiThread{
-                            model.hashtable.put(newsCategory.name,headlines.articles!!)
+                        activity?.runOnUiThread {
+                            model.hashtable.put(newsCategory.name, headlines.articles!!)
                             //model.news = headlines.articles!!
                             mAdapter = headlines.articles?.let {
                                 NewsAdapter(it)
                             }!!
-                            mAdapter.setOnItemClickListener(object: NewsAdapter.OnItemClickListener{
+                            mAdapter.setOnItemClickListener(object :
+                                NewsAdapter.OnItemClickListener {
                                 override fun onItemClick(itemView: View?, position: Int) {
                                     var items = mAdapter.getItems()
                                     var url = items[position].url
-                                    if(url != null && url.isNotEmpty()) {
-                                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                    if (url != null && url.isNotEmpty()) {
+                                        val browserIntent =
+                                            Intent(Intent.ACTION_VIEW, Uri.parse(url))
                                         startActivity(browserIntent)
                                     }
                                 }
@@ -117,7 +124,8 @@ abstract class NewsFragment : Fragment() {
 
     }
 
-    var model : SharedViewModel = SharedViewModel()
+    var model : SharedViewModel =
+        SharedViewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -141,7 +149,9 @@ abstract class NewsFragment : Fragment() {
 
         if (savedInstanceState != null) { //retrieve data from orientation change
             //model.news = savedInstanceState.getParcelableArrayList(ITEMS_KEY)!!
-            model.hashtable.put(newsCategory.name,savedInstanceState.getParcelableArrayList(ITEMS_KEY)!!)
+            model.hashtable.put(newsCategory.name,savedInstanceState.getParcelableArrayList(
+                ITEMS_KEY
+            )!!)
         }
         else if(model.hashtable.get(newsCategory.name)?.count()  == 0) { //retrieve data from fragment change
             if(useDummyData) {
@@ -155,10 +165,12 @@ abstract class NewsFragment : Fragment() {
         if(!model.hashtable.containsKey(newsCategory.name))
             model.hashtable.put(newsCategory.name, ArrayList())
 
-        mAdapter = NewsAdapter(model.hashtable.get(newsCategory.name)!!)
+        mAdapter =
+            NewsAdapter(model.hashtable.get(newsCategory.name)!!)
 
        // mAdapter = NewsAdapter(model.news)
-        mAdapter.setOnItemClickListener(object: NewsAdapter.OnItemClickListener{
+        mAdapter.setOnItemClickListener(object:
+            NewsAdapter.OnItemClickListener {
             override fun onItemClick(itemView: View?, position: Int) {
                 var items = mAdapter.getItems()
                 var url = items[position].url

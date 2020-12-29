@@ -1,8 +1,7 @@
-package com.example.newsapp
+package com.example.newsapp.NewsFragments
 
 import android.os.Bundle
 import com.example.newsapp.news.NewsAPI
-import com.example.newsapp.news.NewsFragment
 
 class SportsNewsFragment : NewsFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {

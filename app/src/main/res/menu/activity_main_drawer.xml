@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+
         <item
             android:title="Top Headlines"
             android:enabled="false"
@@ -46,7 +46,6 @@
         <item
             android:title="Others"
             android:enabled="false"
-            android:titleCondensed="qew"
             android:checkable="false"/>
 
             <item
@@ -62,7 +61,7 @@
                 android:id="@+id/nav_slideshow"
                 android:icon="@drawable/ic_menu_slideshow"
                 android:title="@string/menu_slideshow" />
-    </group>
+
 
 
 </menu>
