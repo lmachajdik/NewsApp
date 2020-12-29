@@ -3,17 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="all">
-
+    <group android:checkableBehavior="single">
         <item
-            android:id="@+id/test"
-            android:title="News"
-            >
-            <menu>
+            android:title="Top Headlines"
+            android:enabled="false"
+            android:checkable="false"/>
             <item
                 android:id="@+id/nav_news_business"
                 android:icon="@drawable/ic_baseline_business_center_24"
-                android:title="Business" />
+                android:title="Business"/>
+
             <item
                 android:id="@+id/nav_news_entertainment"
                 android:icon="@drawable/ic_baseline_sports_esports_24"
@@ -43,24 +42,27 @@
                 android:id="@+id/nav_news_technology"
                 android:icon="@drawable/ic_baseline_memory_24"
                 android:title="Technology" />
-            </menu>
-
-
-        </item>
 
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_home" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
+            android:title="Others"
+            android:enabled="false"
+            android:titleCondensed="qew"
+            android:checkable="false"/>
 
-        <item
-        android:id="@+id/nav_slideshow"
-        android:icon="@drawable/ic_menu_slideshow"
-        android:title="@string/menu_slideshow" />
+            <item
+                android:id="@+id/nav_home"
+                android:icon="@drawable/ic_menu_camera"
+                android:title="@string/menu_home" />
+            <item
+                android:id="@+id/nav_gallery"
+                android:icon="@drawable/ic_menu_gallery"
+                android:title="@string/menu_gallery" />
 
+            <item
+                android:id="@+id/nav_slideshow"
+                android:icon="@drawable/ic_menu_slideshow"
+                android:title="@string/menu_slideshow" />
     </group>
+
+
 </menu>

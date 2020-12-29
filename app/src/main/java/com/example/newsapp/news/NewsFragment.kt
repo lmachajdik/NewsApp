@@ -16,18 +16,24 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.recyclerview.widget.SnapHelper
 import com.example.newsapp.R
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class SharedViewModel : ViewModel() {
     var news : ArrayList<Article> = ArrayList()
+    var hashtable =Hashtable<String, ArrayList<Article>>()
 }
 /**
  * A fragment representing a list of Items.
  */
-class NewsFragment : Fragment() {
+abstract class NewsFragment : Fragment() {
     private var columnCount = 1
     private lateinit var list: RecyclerView
     private lateinit var mAdapter : NewsAdapter
+
+    protected var newsCountry = NewsAPI.Countries.Slovakia
+    protected var newsCategory = NewsAPI.Categories.Science
 
     private val useDummyData = false
 
@@ -68,13 +74,17 @@ class NewsFragment : Fragment() {
 
     private fun fetchNewsFromApi(model: SharedViewModel)
     {
+        if(model.hashtable.keys.contains(newsCategory.name))
+            model.hashtable.remove(newsCategory.name)
+
         NewsAPI.GetTopHeadlines(
-            NewsAPI.Countries.Slovakia,
-            NewsAPI.Categories.Science, object : NewsAPI.ReturnCallback {
+            newsCountry,
+            newsCategory, object : NewsAPI.ReturnCallback {
                 override fun callback(headlines: TopHeadlinesResult?) {
                     if (headlines != null) {
                         activity?.runOnUiThread{
-                            model.news = headlines.articles!!
+                            model.hashtable.put(newsCategory.name,headlines.articles!!)
+                            //model.news = headlines.articles!!
                             mAdapter = headlines.articles?.let {
                                 NewsAdapter(it)
                             }!!
@@ -107,6 +117,8 @@ class NewsFragment : Fragment() {
 
     }
 
+    var model : SharedViewModel = SharedViewModel()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -122,20 +134,30 @@ class NewsFragment : Fragment() {
 
         list.itemAnimator = SlideInUpAnimator()
 
-        val model = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+        model = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+
+        if(!model.hashtable.containsKey(newsCategory.name))
+            model.hashtable.put(newsCategory.name, ArrayList())
 
         if (savedInstanceState != null) { //retrieve data from orientation change
-            model.news = savedInstanceState.getParcelableArrayList(ITEMS_KEY)!!
+            //model.news = savedInstanceState.getParcelableArrayList(ITEMS_KEY)!!
+            model.hashtable.put(newsCategory.name,savedInstanceState.getParcelableArrayList(ITEMS_KEY)!!)
         }
-        else if(model.news.count() == 0) { //retrieve data from fragment change
+        else if(model.hashtable.get(newsCategory.name)?.count()  == 0) { //retrieve data from fragment change
             if(useDummyData) {
-                model.news = getDummyData()
+                model.hashtable.put(newsCategory.name,getDummyData())
+               // model.news = getDummyData()
             }
             else
                 fetchNewsFromApi(model)
         }
 
-        mAdapter = NewsAdapter(model.news)
+        if(!model.hashtable.containsKey(newsCategory.name))
+            model.hashtable.put(newsCategory.name, ArrayList())
+
+        mAdapter = NewsAdapter(model.hashtable.get(newsCategory.name)!!)
+
+       // mAdapter = NewsAdapter(model.news)
         mAdapter.setOnItemClickListener(object: NewsAdapter.OnItemClickListener{
             override fun onItemClick(itemView: View?, position: Int) {
                 var items = mAdapter.getItems()
@@ -147,17 +169,7 @@ class NewsFragment : Fragment() {
             }
         })
         list.adapter = mAdapter
-/*
 
-
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
-                }
-            }
-        }*/
         return view
     }
 
