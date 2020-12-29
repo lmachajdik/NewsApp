@@ -1,5 +1,7 @@
 package com.example.newsapp.news
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -74,13 +76,9 @@ class NewsFragment : Fragment() {
                         activity?.runOnUiThread{
                             model.news = headlines.articles!!
                             mAdapter = headlines.articles?.let {
-                                NewsAdapter(
-                                    it
-                                )
+                                NewsAdapter(it)
                             }!!
-
                             mAdapter.notifyDataSetChanged()
-
                             list.adapter = mAdapter
                         }
                     }
@@ -113,7 +111,6 @@ class NewsFragment : Fragment() {
         snapHelper.attachToRecyclerView(list)
 
         list.itemAnimator = SlideInUpAnimator()
-        //TODO on item click listener
 
         val model = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
@@ -129,8 +126,20 @@ class NewsFragment : Fragment() {
         }
 
         mAdapter = NewsAdapter(model.news)
+        mAdapter.setOnItemClickListener(object: NewsAdapter.OnItemClickListener{
+            override fun onItemClick(itemView: View?, position: Int) {
+                var items = mAdapter.getItems()
+                var url = items[position].url
+                if(url != null && !url.isEmpty()) {
+                    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    startActivity(browserIntent)
+                }
+            }
+        })
         list.adapter = mAdapter
 /*
+
+
         if (view is RecyclerView) {
             with(view) {
                 layoutManager = when {

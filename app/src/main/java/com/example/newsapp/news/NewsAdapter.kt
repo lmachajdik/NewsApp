@@ -1,13 +1,12 @@
 package com.example.newsapp.news
 
-import android.content.Intent
 import android.content.res.Resources
-import android.net.Uri
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -19,16 +18,41 @@ import kotlin.math.roundToInt
 
 class NewsAdapter (private val mArticles: ArrayList<Article>) : RecyclerView.Adapter<NewsAdapter.ViewHolder>()
 {
+    interface OnItemClickListener {
+        fun onItemClick(itemView: View?, position: Int)
+    }
+
+    private var listener: OnItemClickListener? = null
+
+    // Define the method that allows the parent activity or fragment to define the listener
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        this.listener = listener
+    }
+
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
-    inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
+    inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView), View.OnClickListener {
         // Your holder should contain and initialize a member variable
         // for any view that will be set as you render a row
+
         val titleTextView: TextView = itemView.findViewById(R.id.title)
-        val descriptionTextView: TextView = itemView.findViewById(R.id.description)
-        val sourceTextView: TextView = itemView.findViewById(R.id.source)
-        //val authorTextView = itemView.findViewById<TextView>(R.id.author)
-        val imageView: ImageView = itemView.findViewById(R.id.imageView)
+        val descriptionTextView: TextView= itemView.findViewById(R.id.description)
+        val sourceTextView: TextView= itemView.findViewById(R.id.source)
+        val imageView: ImageView= itemView.findViewById(R.id.imageView)
+
+        init {
+            itemView.setOnClickListener(this);
+        }
+
+        override fun onClick(itemView: View?) {
+            if (listener != null) {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    listener!!.onItemClick(itemView, position)
+                }
+            }
+        }
+
     }
 
     // ... constructor and member variables
