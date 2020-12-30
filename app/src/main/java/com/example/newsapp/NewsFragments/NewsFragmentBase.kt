@@ -33,11 +33,22 @@ abstract class NewsFragment : Fragment() {
     private lateinit var list: RecyclerView
     private lateinit var mAdapter : NewsAdapter
 
-    protected var newsCountry = NewsAPI.Countries.Slovakia
     protected var newsCategory = NewsAPI.Categories.None
 
-    private val useDummyData = false
+    var UpdateNeeded = false
 
+    private var _newsLanguage: NewsAPI.Countries = NewsAPI.Countries.Slovakia
+    var NewsCountry: NewsAPI.Countries
+        get() { return _newsLanguage
+        }
+        set(value){
+            _newsLanguage = value
+            if(NewsAPI.NewsCountry != _newsLanguage)
+                UpdateNeeded = true
+        }
+
+
+    private val useDummyData = false
     private fun getDummyData() : ArrayList<Article>
     {
         var headlines : TopHeadlinesResult =
@@ -77,17 +88,19 @@ abstract class NewsFragment : Fragment() {
         return headlines.articles!!
     }
 
-    private fun fetchNewsFromApi(model: SharedViewModel)
+    fun fetchNewsFromApi(model: SharedViewModel = this.model)
     {
         if(model.topHeadlines.keys.contains(newsCategory.name))
             model.topHeadlines.remove(newsCategory.name)
 
         NewsAPI.GetTopHeadlines(
-            newsCountry,
+            NewsAPI.NewsCountry,
             newsCategory,
             object : NewsAPI.ReturnCallback {
                 override fun callback(headlines: TopHeadlinesResult?) {
                     if (headlines != null) {
+                        NewsCountry = NewsAPI.NewsCountry
+
                         activity?.runOnUiThread {
                             model.topHeadlines.put(newsCategory.name, headlines.articles!!)
                             //model.news = headlines.articles!!
@@ -118,7 +131,6 @@ abstract class NewsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
         }
@@ -138,6 +150,8 @@ abstract class NewsFragment : Fragment() {
             DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         list.addItemDecoration(itemDecoration)
 
+        currentInstance = this
+
         val snapHelper: SnapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(list)
 
@@ -148,7 +162,13 @@ abstract class NewsFragment : Fragment() {
         if(!model.topHeadlines.containsKey(newsCategory.name))
             model.topHeadlines.put(newsCategory.name, ArrayList())
 
-        if (savedInstanceState != null) { //retrieve data from orientation change
+        if(NewsAPI.NewsCountry != _newsLanguage)
+            UpdateNeeded = true
+
+        if(UpdateNeeded) {
+            fetchNewsFromApi(model)
+        }
+        else if (savedInstanceState != null) { //retrieve data from orientation change
             //model.news = savedInstanceState.getParcelableArrayList(ITEMS_KEY)!!
             model.topHeadlines.put(newsCategory.name,savedInstanceState.getParcelableArrayList(
                 ITEMS_KEY
@@ -191,8 +211,15 @@ abstract class NewsFragment : Fragment() {
         outState.putParcelableArrayList(ITEMS_KEY, mAdapter.getItems())
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if(currentInstance == this)
+            currentInstance = null
+    }
+
     companion object {
         const val ITEMS_KEY = "list"
         const val ARG_COLUMN_COUNT = "column-count"
+        var currentInstance: NewsFragment? = null
     }
 }

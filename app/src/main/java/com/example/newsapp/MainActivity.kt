@@ -1,23 +1,22 @@
 package com.example.newsapp
 
+import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.newsapp.NewsFragments.NewsFragment
 import com.example.newsapp.news.NewsAPI
 import com.example.newsapp.news.TopHeadlinesResult
-import com.example.newsapp.ui.home.HomeFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import net.danlew.android.joda.JodaTimeAndroid
@@ -31,7 +30,36 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
+
         setSupportActionBar(toolbar)
+
+        toolbar.setOnMenuItemClickListener { it: MenuItem? ->
+            if(it?.itemId == R.id.newsCountry_settings)
+            {
+                val builder: AlertDialog.Builder = this.let {
+                    AlertDialog.Builder(it)
+                }
+
+                if (builder != null) {
+                    var arr = NewsAPI.Countries.values()
+                    val items =arrayOfNulls<String>(arr.count())
+                    var i = 0
+                    arr.forEach {
+                        items[i] = arr[i++].name
+                    }
+                    builder
+                        .setTitle("Select Country")
+                        .setItems(items, DialogInterface.OnClickListener { dialogInterface, i ->
+                            NewsAPI.NewsCountry = NewsAPI.Countries.valueOf(arr[i].name)
+                            NewsFragment.currentInstance?.NewsCountry  = NewsAPI.NewsCountry
+                            NewsFragment.currentInstance?.fetchNewsFromApi()
+                        })
+
+                    builder.create().show()
+                }
+            }
+            return@setOnMenuItemClickListener true
+        }
 
         JodaTimeAndroid.init(this)
         NewsAPI.setApiContext(this)
@@ -80,6 +108,8 @@ class MainActivity : AppCompatActivity() {
         }*/
     }
 
+
+
     override fun onResume() {
         super.onResume()
         val navController = findNavController(R.id.nav_host_fragment)
@@ -91,6 +121,8 @@ class MainActivity : AppCompatActivity() {
         navController.removeOnDestinationChangedListener(listener)
         super.onPause()
     }
+
+
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
         return super.onContextItemSelected(item)

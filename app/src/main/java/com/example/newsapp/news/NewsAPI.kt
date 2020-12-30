@@ -14,16 +14,67 @@ object NewsAPI {
     const val apiKey: String = "76ff51a9aa11451f93dfe57aedb57586"
     private lateinit var context:Context
 
+    var NewsCountry = Countries.Slovakia
+
     fun setApiContext(context: Context)
     {
         this.context = context
     }
 
     enum class Countries(val code: String) {
-        // ae ar at au be bg br ca ch cn co cu cz de eg fr gb gr hk hu id ie il in it jp kr lt lv ma mx my ng nl no nz ph pl pt ro rs ru sa se sg si sk th tr tw ua us ve za
-        Czechia("cz"),
+        Argentina("ar"),
+        Austria("at"),
+        Belgium("be"),
+        Bulgaria("bg"),
+        Brazil("bz"),
+        Canada("ca"),
+        Colombia("co"),
+        China("cn"),
+        Cuba("cu"),
+        CzechRepublic("cz"),
+        Egypt("eg"),
+        France("fr"),
+        Germany("de"),
+        Greek("gr"),
+        HongKong("hk"),
+        Hungary("hu"),
+        India("in"),
+        Indonesia("id"),
+        Ireland("ie"),
+        Israel("il"),
+        Italy("it"),
+        Japan("jp"),
+        Latvia("lv"),
+        Lithuania("lt"),
+        Malaysia("my"),
+        Mexico("mx"),
+        Morocco("ma"),
+        Netherlands("nl"),
+        NewZealand("nz"),
+        Nigeria("ng"),
+        Norway("no"),
+        Philippines("ph"),
+        Poland("pl"),
+        Portugal("pt"),
+        Romania("ro"),
+        Russia("ru"),
+        SaudiArabia("sa"),
+        Serbia("rs"),
+        Singapore("sg"),
+        SouthAfrica("za"),
+        SouthKorea("kr"),
         Slovakia("sk"),
-        USA("us")
+        Slovenia("si"),
+        Sweden("se"),
+        Switzerland("ch"),
+        Taiwan("tw"),
+        Thailand("th"),
+        Turkey("tr"),
+        Ukraine("ua"),
+        UnitedArabEmirates("ae"),
+        UnitedKingdom("gb"),
+        UnitedStates("us"),
+        Venezuela("ve"),
     }
 
     enum class Categories() {
@@ -50,6 +101,7 @@ object NewsAPI {
     {
         //val client = OkHttpClient()
       //  OkHttpClient.Builder().
+
 
         val client = OkHttpClient.Builder()
             /*.cache(Cache(context.cacheDir, 10 * 1024 * 1024)) // 10 MB
@@ -86,7 +138,7 @@ object NewsAPI {
         fun callback(headlines:TopHeadlinesResult?)
     }
 
-    fun GetTopHeadlines(country: Countries, category: Categories, callback:ReturnCallback
+    fun GetTopHeadlines(country: NewsAPI.Countries, category: Categories, callback:ReturnCallback
     ) {
         var categoryStr = "&category=$category"
         if(category== Categories.None)
