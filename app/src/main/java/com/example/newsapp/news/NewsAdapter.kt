@@ -17,7 +17,7 @@ import org.joda.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
 
-class NewsAdapter (private val mArticles: ArrayList<Article>) : RecyclerView.Adapter<NewsAdapter.ViewHolder>()
+class NewsAdapter (private val mArticles: List<Article>) : RecyclerView.Adapter<NewsAdapter.ViewHolder>()
 {
     interface OnItemClickListener {
         fun onItemClick(itemView: View?, position: Int)
@@ -121,7 +121,7 @@ class NewsAdapter (private val mArticles: ArrayList<Article>) : RecyclerView.Ada
         return mArticles.size
     }
 
-    fun getItems() : ArrayList<Article>
+    fun getItems() : List<Article>
     {
         return this.mArticles
     }

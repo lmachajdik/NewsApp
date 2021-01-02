@@ -1,7 +1,7 @@
 package com.example.newsapp.network
 
-import com.example.newsapp.news.OnRequestCompleteListener
 import com.example.newsapp.news.TopHeadlinesResult
+import com.example.newsapp.repository.HeadlinesRepository
 import okhttp3.Interceptor
 import okhttp3.Response
 import retrofit2.Call

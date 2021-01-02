@@ -7,9 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -18,13 +16,12 @@ import androidx.recyclerview.widget.SnapHelper
 //import com.example.newsapp.NewsDB
 import com.example.newsapp.R
 import com.example.newsapp.models.SharedViewModel
-import com.example.newsapp.network.HeadlinesRepository
+import com.example.newsapp.repository.HeadlinesRepository
 import com.example.newsapp.network.NewsAPI
 import com.example.newsapp.news.*
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.util.*
 import kotlin.collections.ArrayList
 
 /**
@@ -93,32 +90,16 @@ abstract class NewsFragment : Fragment() {
 
     fun fetchNewsFromApi(model: SharedViewModel = this.model)
     {
-        HeadlinesRepository.getTopHeadlines(
-            NewsAPI.NewsCountry,
-            newsCategory).observe(viewLifecycleOwner){
+        HeadlinesRepository.getTopHeadlines(NewsAPI.NewsCountry,newsCategory)
+        .observe(viewLifecycleOwner){
 
-                if(model.topHeadlines.keys.contains(newsCategory.name))
-                    model.topHeadlines.remove(newsCategory.name)
+               // if(model.topHeadlines.keys.contains(newsCategory.name))
+                  //  model.topHeadlines.remove(newsCategory.name)
                 NewsCountry = NewsAPI.NewsCountry
 
                 activity?.runOnUiThread {
-                    model.topHeadlines.put(newsCategory.name, it)
-                    //model.news = headlines.articles!!
-                    mAdapter = NewsAdapter(it)
-                    mAdapter.setOnItemClickListener(object :
-                        NewsAdapter.OnItemClickListener {
-                        override fun onItemClick(itemView: View?, position: Int) {
-                            var items = mAdapter.getItems()
-                            var url = items[position].url
-                            if (url != null && url.isNotEmpty()) {
-                                val browserIntent =
-                                    Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                                startActivity(browserIntent)
-                            }
-                        }
-                    })
+                    model.topHeadlines.get(newsCategory.name)?.value = it
                     mAdapter.notifyDataSetChanged()
-                    list.adapter = mAdapter
                 }
 
                 GlobalScope.launch {
@@ -157,8 +138,44 @@ abstract class NewsFragment : Fragment() {
 
         model = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
-        if(!model.topHeadlines.containsKey(newsCategory.name))
-            model.topHeadlines.put(newsCategory.name, ArrayList())
+        if(!model.topHeadlines.containsKey(newsCategory.name)) {
+            var mld = MutableLiveData<List<Article>>()
+            /*mld.observe(viewLifecycleOwner){
+                mAdapter = NewsAdapter(it)
+                mAdapter.setOnItemClickListener(object:
+                    NewsAdapter.OnItemClickListener {
+                    override fun onItemClick(itemView: View?, position: Int) {
+                        var items = mAdapter.getItems()
+                        var url = items[position].url
+                        if(url != null && url.isNotEmpty()) {
+                            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                            startActivity(browserIntent)
+                        }
+                    }
+                })
+                list.adapter = mAdapter
+            }*/
+
+            model.topHeadlines.put(newsCategory.name, mld)
+            model.topHeadlines.get(newsCategory.name)?.value = ArrayList()
+        }
+
+        model.topHeadlines[newsCategory.name]?.observe(viewLifecycleOwner) {
+            mAdapter = NewsAdapter(it)
+            mAdapter.setOnItemClickListener(object:
+                NewsAdapter.OnItemClickListener {
+                override fun onItemClick(itemView: View?, position: Int) {
+                    var items = mAdapter.getItems()
+                    var url = items[position].url
+                    if(url != null && url.isNotEmpty()) {
+                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        startActivity(browserIntent)
+                    }
+                }
+            })
+            list.adapter = mAdapter
+
+        }
 
         if(NewsAPI.NewsCountry != _newsLanguage)
             UpdateNeeded = true
@@ -167,46 +184,22 @@ abstract class NewsFragment : Fragment() {
             fetchNewsFromApi(model)
         }
         else if (savedInstanceState != null) { //retrieve data from orientation change
-            //model.news = savedInstanceState.getParcelableArrayList(ITEMS_KEY)!!
-            model.topHeadlines.put(newsCategory.name,savedInstanceState.getParcelableArrayList(
-                ITEMS_KEY
-            )!!)
+            var arr = (savedInstanceState.get(ITEMS_KEY) as Array<Article>)
+            model.topHeadlines[newsCategory.name]?.value = arr.toList()
         }
-        else if(model.topHeadlines.get(newsCategory.name)?.count()  == 0) { //retrieve data from fragment change
-            if(useDummyData) {
-                model.topHeadlines.put(newsCategory.name,getDummyData())
-               // model.news = getDummyData()
-            }
-            else
+        else if(model.topHeadlines.get(newsCategory.name)?.value?.count()  == 0) {
+            if (useDummyData) {
+                model.topHeadlines[newsCategory.name]?.value = getDummyData().toList()
+            } else
                 fetchNewsFromApi(model)
         }
-
-        if(!model.topHeadlines.containsKey(newsCategory.name))
-            model.topHeadlines.put(newsCategory.name, ArrayList())
-
-        mAdapter =
-            NewsAdapter(model.topHeadlines.get(newsCategory.name)!!)
-
-       // mAdapter = NewsAdapter(model.news)
-        mAdapter.setOnItemClickListener(object:
-            NewsAdapter.OnItemClickListener {
-            override fun onItemClick(itemView: View?, position: Int) {
-                var items = mAdapter.getItems()
-                var url = items[position].url
-                if(url != null && url.isNotEmpty()) {
-                    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    startActivity(browserIntent)
-                }
-            }
-        })
-        list.adapter = mAdapter
 
         return view
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelableArrayList(ITEMS_KEY, mAdapter.getItems())
+        outState.putParcelableArray(ITEMS_KEY, mAdapter.getItems().toTypedArray())
     }
 
     override fun onDestroyView() {

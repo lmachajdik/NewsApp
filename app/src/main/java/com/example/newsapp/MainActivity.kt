@@ -65,15 +65,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
-    /*suspend fun test(){
-        coroutineScope {
-                var a = NewsDB.getArticles()
-                var b = NewsDB.getArticles(NewsAPI.Categories.Sports)
-
-                println()
-        }
-    }*/
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -81,17 +72,6 @@ class MainActivity : AppCompatActivity() {
 
         JodaTimeAndroid.init(this)
        // NewsDB.init(this)
-
-        GlobalScope.launch {
-            val json = "{\"status\":\"ok\",\"totalResults\":2,\"articles\":[{\"source\":{\"id\":null,\"name\":\"Startitup.sk\"},\"author\":null,\"title\":\"Otestovali sme elektrické Audi e-Tron Sportback. V zime trpí najväčším kameňom úrazu elektromobilov - FonTech\",\"description\":\"Otestovali sme elektrické SUV Audi e-tron Sportback. Takéto dojmy v nás zanejchal luxusný elektromobil nemeckej automobilky.\",\"url\":\"https://fontech.startitup.sk/recenzia-audi-e-tron-sportback/\",\"urlToImage\":\"https://fontech.startitup.sk/wp-content/uploads/2021/01/audi-e-tron-sportback-test.png\",\"publishedAt\":\"2021-01-01T16:26:47Z\",\"content\":\"Vitaj!Toto je nová a peciálne dedikovaná stránka pre vetkých nadencov elektromobility a fanúikov FonTechu, ktorých bavia témy od elektromobilov, cez iné e-dopravné prostriedky, ekológiu, a po to najn… [+166 chars]\"},{\"source\":{\"id\":null,\"name\":\"Teslamagazin.sk\"},\"author\":\"Juraj Bakša\",\"title\":\"Tesla Model Y vyrábaná v Číne bude stáť oveľa menej. Príde aj do Európy? - Tesla magazín\",\"description\":\"Spoločnosť Tesla už v čínskom závode vyrába svoj najnovší elektromobil Tesla Model Y. Oznámila pritom finálne, uveľa nižšie ceny. V Európe...\",\"url\":\"https://www.teslamagazin.sk/tesla-model-y-cena-cina-europa/\",\"urlToImage\":\"https://www.teslamagazin.sk/wp-content/uploads/2020/10/tesla-model-y-e1602175903162.jpg\",\"publishedAt\":\"2021-01-01T11:36:00Z\",\"content\":\"Spolonos Tesla v ínskom závode Giga Shanghai u vyrába svoj najnoví elektromobil Tesla Model Y. Prvé dodávky sa dostanú k zákazníkom tento mesiac, a tak sme spoznali aj finálne ceny. Tie sú podstatne … [+2341 chars]\"}]}"
-                val gson = GsonBuilder()
-                    .create()
-
-                val result = gson.fromJson(json,TopHeadlinesResult::class.java
-                )
-            println()
-        }
-
         setSupportActionBar(toolbar)
 
         toolbar.setOnMenuItemClickListener { it: MenuItem? ->
@@ -113,7 +93,7 @@ class MainActivity : AppCompatActivity() {
                         .setItems(items, DialogInterface.OnClickListener { dialogInterface, i ->
                             NewsAPI.NewsCountry = NewsAPI.Countries.valueOf(arr[i].name)
                             NewsFragment.currentInstance?.NewsCountry  = NewsAPI.NewsCountry
-                            NewsFragment.currentInstance?.fetchNewsFromApi()
+                            NewsFragment.currentInstance?.fetchNewsFromApi() //update for currently selected country
                         })
 
                     builder.create().show()
@@ -158,16 +138,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val listener = NavController.OnDestinationChangedListener { controller, destination, arguments ->
-/*
-        if(destination.id==R.id.nav_home) {
-
-            if (controller.popBackStack(R.id.nav_home, false)) {
-                Log.d("", "SettingsFragment found in backStack")
-            } else {
-                Log.d("", "SettingsFragment not found in backStack, navigate manually")
-                controller.navigate(R.id.nav_home)
-            }
-        }*/
     }
 
 
