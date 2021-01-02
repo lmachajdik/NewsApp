@@ -2,18 +2,59 @@ package com.example.newsapp.news
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.room.*
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 
-data class Source(var id:String?=null , var name:String?=null) : Parcelable {
+@Database(entities = [Article::class], version = 1)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun userDao(): UserDao
+}
+
+@Dao
+interface UserDao {
+    @Query("SELECT * FROM articles")
+    fun getAll(): List<Article>
+
+    @Query("SELECT * FROM articles WHERE category=:Category")
+    fun getAllByCategory(Category:String) : List<Article>
+
+    @Insert
+    fun insert(vararg users: Article)
+
+    @Insert
+    fun insertAll(users: List<Article>)
+    {
+       users.forEach {
+           insert(it)
+       }
+    }
+
+    @Query("DELETE FROM articles")
+    fun deleteAll()
+
+    @Query("DELETE FROM articles WHERE category=:category")
+    fun deleteAll(category: String?)
+}
+
+@Entity(tableName = "article-sources")
+data class Source(
+
+    @PrimaryKey(autoGenerate = true)
+    var id:Int?=null,
+    var sourceId:String?=null,
+    var name:String?=null
+) : Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readInt(),
         parcel.readString(),
         parcel.readString()
     ) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(id)
+        this.id?.let { parcel.writeInt(it) }
+        parcel.writeString(sourceId)
         parcel.writeString(name)
     }
 
@@ -31,8 +72,12 @@ data class Source(var id:String?=null , var name:String?=null) : Parcelable {
         }
     }
 }
-
+@Entity(tableName = "articles")
 data class Article(
+    @PrimaryKey(autoGenerate = true)
+    var id:Int?=null,
+
+    @Ignore
     var source: Source? = null,
     var author: String? = null,
     var title: String? = null,
@@ -40,7 +85,8 @@ data class Article(
     var content: String?=null,
     var publishedAt : String?=null,
     var url : String?=null,
-    var urlToImage : String?=null
+    var urlToImage : String?=null,
+    var category: String?=null
     //
 ) : Parcelable
 {
@@ -55,6 +101,7 @@ data class Article(
     }
 
     constructor(parcel: Parcel) : this(
+        parcel.readInt(),
         parcel.readParcelable(Source::class.java.classLoader),
         parcel.readString(),
         parcel.readString(),
@@ -67,6 +114,7 @@ data class Article(
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        id?.let { parcel.writeInt(it) }
         parcel.writeParcelable(source, flags)
         parcel.writeString(author)
         parcel.writeString(title)

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -14,9 +15,12 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.recyclerview.widget.SnapHelper
+import com.example.newsapp.NewsDB
 import com.example.newsapp.R
 import com.example.newsapp.news.*
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -72,7 +76,8 @@ abstract class NewsFragment : Fragment() {
 
 
             var a = Article(
-                Source("", "Lifehacker.com"),
+                null,
+                Source(null,"", "Lifehacker.com"),
                 "Mike Winters on Two Cents, shared by Mike Winters to Lifehacker",
                 "Is the New Visa Bitcoin Rewards Card Worth It?",
                 "Visa has partnered with cryptocurrency startup BlockFi to offer the first rewards credit card that pays out in Bitcoin rather than cash, but is it worth applying for? Unless you’re extremely bullish on cryptocurrency and don’t mind getting seriously dinged fo…",
@@ -122,6 +127,11 @@ abstract class NewsFragment : Fragment() {
                             mAdapter.notifyDataSetChanged()
                             list.adapter = mAdapter
                         }
+
+                        GlobalScope.launch {
+                            NewsDB.deleteAllArticles(newsCategory)
+                            NewsDB.insertArticles(headlines.articles!!)
+                        }
                     }
                 }
 
@@ -137,8 +147,7 @@ abstract class NewsFragment : Fragment() {
 
     }
 
-    var model : SharedViewModel =
-        SharedViewModel()
+    var model : SharedViewModel = SharedViewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

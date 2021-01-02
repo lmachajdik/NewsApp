@@ -1,5 +1,6 @@
 package com.example.newsapp
 
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.Menu
@@ -14,22 +15,78 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.room.Room
 import com.example.newsapp.NewsFragments.NewsFragment
+import com.example.newsapp.news.AppDatabase
+import com.example.newsapp.news.Article
 import com.example.newsapp.news.NewsAPI
 import com.example.newsapp.news.TopHeadlinesResult
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import kotlinx.coroutines.*
 import net.danlew.android.joda.JodaTimeAndroid
 
+
+object NewsDB{
+    private lateinit var db:AppDatabase
+    fun init(applicationContext: Context){
+        db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "newsDb"
+        ).build()
+    }
+
+    fun getArticles() : List<Article>
+    {
+        return db.userDao().getAll()
+    }
+
+    fun getArticles(category: NewsAPI.Categories) : List<Article>
+    {
+        return db.userDao().getAllByCategory(category.name)
+    }
+
+    fun insertArticles(articles: List<Article>)
+    {
+        db.userDao().insertAll(articles)
+    }
+
+    fun deleteAllArticles(category: NewsAPI.Categories)
+    {
+        db.userDao().deleteAll(category.name)
+    }
+
+    fun deleteAllArticles()
+    {
+        db.userDao().deleteAll()
+    }
+
+}
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
+    suspend fun test(){
+        coroutineScope {
+                var a = NewsDB.getArticles()
+                var b = NewsDB.getArticles(NewsAPI.Categories.Sports)
+
+                println()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
+
+        JodaTimeAndroid.init(this)
+        NewsDB.init(this)
+
+        GlobalScope.launch {
+            test()
+        }
 
         setSupportActionBar(toolbar)
 
@@ -61,8 +118,7 @@ class MainActivity : AppCompatActivity() {
             return@setOnMenuItemClickListener true
         }
 
-        JodaTimeAndroid.init(this)
-        NewsAPI.setApiContext(this)
+
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener { view ->

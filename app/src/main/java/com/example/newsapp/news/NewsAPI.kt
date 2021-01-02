@@ -9,17 +9,10 @@ import java.util.concurrent.TimeUnit
 
 
 object NewsAPI {
-    private var onRequestCompleteListener : OnRequestCompleteListener? =null
     const val baseURL: String = "https://newsapi.org/v2/"
     const val apiKey: String = "76ff51a9aa11451f93dfe57aedb57586"
-    private lateinit var context:Context
 
     var NewsCountry = Countries.Slovakia
-
-    fun setApiContext(context: Context)
-    {
-        this.context = context
-    }
 
     enum class Countries(val code: String) {
         Argentina("ar"),
@@ -77,7 +70,7 @@ object NewsAPI {
         Venezuela("ve"),
     }
 
-    enum class Categories() {
+    enum class Categories {
         Business,
         Entertainment,
         General,
@@ -85,24 +78,15 @@ object NewsAPI {
         Science,
         Sports,
         Technology,
-        None
-    }
+        None;
 
-    fun isNetworkAvailable(context: Context): Boolean {
-        val cm =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetwork = cm.activeNetworkInfo
-        return activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting
+        override fun toString(): String {
+            return this.name // working!
+        }
     }
-
 
     private fun getRequest(request: Request, callback: OnRequestCompleteListener)
     {
-        //val client = OkHttpClient()
-      //  OkHttpClient.Builder().
-
-
         val client = OkHttpClient.Builder()
             /*.cache(Cache(context.cacheDir, 10 * 1024 * 1024)) // 10 MB
             .connectTimeout(5, TimeUnit.SECONDS)
@@ -144,8 +128,6 @@ object NewsAPI {
         if(category== Categories.None)
             categoryStr=""
 
-
-
         val request = Request.Builder()
             .url(baseURL + "top-headlines?country="+ country.code + categoryStr + "&apiKey="+apiKey)
             .get()
@@ -156,7 +138,9 @@ object NewsAPI {
                 val gson = GsonBuilder()
                     .create()
                 val result = gson.fromJson(jsonResult,TopHeadlinesResult::class.java)
-
+                result.articles?.forEach { article ->
+                    article.category = category.name
+                }
                 callback.callback(result)
             }
 
