@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import com.example.newsapp.network.GetDataService
 import com.example.newsapp.network.NetworkApiInterceptor
 import com.example.newsapp.network.NewsAPI
-import com.example.newsapp.news.Article
-import com.example.newsapp.news.TopHeadlinesResult
+import com.example.newsapp.models.Article
+import com.example.newsapp.models.TopHeadlinesResult
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit

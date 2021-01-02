@@ -17,11 +17,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.newsapp.NewsFragments.NewsFragment
 //import com.example.newsapp.news.AppDatabase
 import com.example.newsapp.network.NewsAPI
-import com.example.newsapp.news.TopHeadlinesResult
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
-import com.google.gson.GsonBuilder
-import kotlinx.coroutines.*
 import net.danlew.android.joda.JodaTimeAndroid
 
 /*
@@ -93,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                         .setItems(items, DialogInterface.OnClickListener { dialogInterface, i ->
                             NewsAPI.NewsCountry = NewsAPI.Countries.valueOf(arr[i].name)
                             NewsFragment.currentInstance?.NewsCountry  = NewsAPI.NewsCountry
-                            NewsFragment.currentInstance?.fetchNewsFromApi() //update for currently selected country
+                            NewsFragment.currentInstance?.getTopHeadlinesFromRepository() //update for currently selected country
                         })
 
                     builder.create().show()

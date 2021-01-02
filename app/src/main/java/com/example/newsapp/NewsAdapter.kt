@@ -1,4 +1,4 @@
-package com.example.newsapp.news
+package com.example.newsapp
 
 import android.content.res.Resources
 import android.util.TypedValue
@@ -10,10 +10,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.Target
-import com.example.newsapp.R
-import org.joda.time.DateTime
+import com.example.newsapp.models.Article
 import org.joda.time.format.DateTimeFormat
-import org.joda.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
 

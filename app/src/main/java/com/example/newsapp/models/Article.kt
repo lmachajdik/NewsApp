@@ -1,43 +1,12 @@
-package com.example.newsapp.news
+package com.example.newsapp.models
 
 import android.os.Parcel
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
-/*
-@Database(entities = [Article::class], version = 1)
-abstract class AppDatabase : RoomDatabase() {
-    abstract fun userDao(): UserDao
-}
 
-@Dao
-interface UserDao {
-    @Query("SELECT * FROM articles")
-    fun getAll(): List<Article>
-
-    @Query("SELECT * FROM articles WHERE category=:Category")
-    fun getAllByCategory(Category:String) : List<Article>
-
-    @Insert
-    fun insert(vararg users: Article)
-
-    @Insert
-    fun insertAll(users: List<Article>)
-    {
-       users.forEach {
-           insert(it)
-       }
-    }
-
-    @Query("DELETE FROM articles")
-    fun deleteAll()
-
-    @Query("DELETE FROM articles WHERE category=:category")
-    fun deleteAll(category: String?)
-}*/
-
-data class Source(
+data class HeadlineSource(
     @Json(name="id")
     var id:String?=null,
     @Json(name="name")
@@ -58,20 +27,21 @@ data class Source(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<Source> {
-        override fun createFromParcel(parcel: Parcel): Source {
-            return Source(parcel)
+    companion object CREATOR : Parcelable.Creator<HeadlineSource> {
+        override fun createFromParcel(parcel: Parcel): HeadlineSource {
+            return HeadlineSource(parcel)
         }
 
-        override fun newArray(size: Int): Array<Source?> {
+        override fun newArray(size: Int): Array<HeadlineSource?> {
             return arrayOfNulls(size)
         }
     }
 }
 
+
 data class Article(
     @Json(name="source")
-    var source: Source? = null,
+    var source: HeadlineSource? = null,
     @Json(name="author")
     var author: String? = null,
     @Json(name="title")
@@ -103,7 +73,7 @@ data class Article(
 
     constructor(parcel: Parcel) : this(
        // parcel.readInt(),
-        parcel.readParcelable(Source::class.java.classLoader),
+        parcel.readParcelable(HeadlineSource::class.java.classLoader),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -130,7 +100,8 @@ data class Article(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<Article> {
+    companion object CREATOR :
+        Parcelable.Creator<Article> {
         override fun createFromParcel(parcel: Parcel): Article {
             return Article(parcel)
         }
@@ -143,4 +114,3 @@ data class Article(
     }
 
 }
-

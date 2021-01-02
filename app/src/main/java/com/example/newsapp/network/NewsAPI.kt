@@ -1,6 +1,6 @@
 package com.example.newsapp.network
 
-import com.example.newsapp.news.TopHeadlinesResult
+import com.example.newsapp.models.TopHeadlinesResult
 import com.example.newsapp.repository.HeadlinesRepository
 import okhttp3.Interceptor
 import okhttp3.Response

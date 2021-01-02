@@ -13,12 +13,15 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.recyclerview.widget.SnapHelper
+import com.example.newsapp.NewsAdapter
 //import com.example.newsapp.NewsDB
 import com.example.newsapp.R
+import com.example.newsapp.models.Article
 import com.example.newsapp.models.SharedViewModel
+import com.example.newsapp.models.HeadlineSource
+import com.example.newsapp.models.TopHeadlinesResult
 import com.example.newsapp.repository.HeadlinesRepository
 import com.example.newsapp.network.NewsAPI
-import com.example.newsapp.news.*
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -47,7 +50,7 @@ abstract class NewsFragment : Fragment() {
         }
 
 
-    private val useDummyData = false
+    private val useDummyData = true
     private fun getDummyData() : ArrayList<Article>
     {
         var headlines : TopHeadlinesResult =
@@ -71,8 +74,8 @@ abstract class NewsFragment : Fragment() {
 
 
             var a = Article(
-            //    null,
-                Source("", "Lifehacker.com"),
+                //    null,
+                HeadlineSource("", "Lifehacker.com"),
                 "Mike Winters on Two Cents, shared by Mike Winters to Lifehacker",
                 "Is the New Visa Bitcoin Rewards Card Worth It?",
                 "Visa has partnered with cryptocurrency startup BlockFi to offer the first rewards credit card that pays out in Bitcoin rather than cash, but is it worth applying for? Unless you’re extremely bullish on cryptocurrency and don’t mind getting seriously dinged fo…",
@@ -88,13 +91,11 @@ abstract class NewsFragment : Fragment() {
         return headlines.articles!!
     }
 
-    fun fetchNewsFromApi(model: SharedViewModel = this.model)
+    fun getTopHeadlinesFromRepository(model: SharedViewModel = this.model)
     {
         HeadlinesRepository.getTopHeadlines(NewsAPI.NewsCountry,newsCategory)
         .observe(viewLifecycleOwner){
 
-               // if(model.topHeadlines.keys.contains(newsCategory.name))
-                  //  model.topHeadlines.remove(newsCategory.name)
                 NewsCountry = NewsAPI.NewsCountry
 
                 activity?.runOnUiThread {
@@ -138,23 +139,8 @@ abstract class NewsFragment : Fragment() {
 
         model = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
-        if(!model.topHeadlines.containsKey(newsCategory.name)) {
+        if(!model.topHeadlines.containsKey(newsCategory.name)) { //model doesnt contain this fragment's category, initialize it
             var mld = MutableLiveData<List<Article>>()
-            /*mld.observe(viewLifecycleOwner){
-                mAdapter = NewsAdapter(it)
-                mAdapter.setOnItemClickListener(object:
-                    NewsAdapter.OnItemClickListener {
-                    override fun onItemClick(itemView: View?, position: Int) {
-                        var items = mAdapter.getItems()
-                        var url = items[position].url
-                        if(url != null && url.isNotEmpty()) {
-                            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                            startActivity(browserIntent)
-                        }
-                    }
-                })
-                list.adapter = mAdapter
-            }*/
 
             model.topHeadlines.put(newsCategory.name, mld)
             model.topHeadlines.get(newsCategory.name)?.value = ArrayList()
@@ -181,17 +167,17 @@ abstract class NewsFragment : Fragment() {
             UpdateNeeded = true
 
         if(UpdateNeeded) {
-            fetchNewsFromApi(model)
+            getTopHeadlinesFromRepository(model)
         }
         else if (savedInstanceState != null) { //retrieve data from orientation change
             var arr = (savedInstanceState.get(ITEMS_KEY) as Array<Article>)
             model.topHeadlines[newsCategory.name]?.value = arr.toList()
         }
-        else if(model.topHeadlines.get(newsCategory.name)?.value?.count()  == 0) {
+        else if(model.topHeadlines.get(newsCategory.name)?.value?.count()  == 0) { //if local model is empty
             if (useDummyData) {
                 model.topHeadlines[newsCategory.name]?.value = getDummyData().toList()
             } else
-                fetchNewsFromApi(model)
+                getTopHeadlinesFromRepository(model)
         }
 
         return view
