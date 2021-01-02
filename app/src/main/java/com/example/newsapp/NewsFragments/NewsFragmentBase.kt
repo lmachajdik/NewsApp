@@ -7,16 +7,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.recyclerview.widget.SnapHelper
-import com.example.newsapp.NewsDB
+//import com.example.newsapp.NewsDB
 import com.example.newsapp.R
+import com.example.newsapp.models.SharedViewModel
+import com.example.newsapp.network.HeadlinesRepository
+import com.example.newsapp.network.NewsAPI
 import com.example.newsapp.news.*
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.coroutines.GlobalScope
@@ -24,11 +27,6 @@ import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
-
-class SharedViewModel : ViewModel() {
-    var news : ArrayList<Article> = ArrayList()
-    var topHeadlines =Hashtable<String, ArrayList<Article>>()
-}
 /**
  * A fragment representing a list of Items.
  */
@@ -76,8 +74,8 @@ abstract class NewsFragment : Fragment() {
 
 
             var a = Article(
-                null,
-                Source(null,"", "Lifehacker.com"),
+            //    null,
+                Source("", "Lifehacker.com"),
                 "Mike Winters on Two Cents, shared by Mike Winters to Lifehacker",
                 "Is the New Visa Bitcoin Rewards Card Worth It?",
                 "Visa has partnered with cryptocurrency startup BlockFi to offer the first rewards credit card that pays out in Bitcoin rather than cash, but is it worth applying for? Unless you’re extremely bullish on cryptocurrency and don’t mind getting seriously dinged fo…",
@@ -95,48 +93,39 @@ abstract class NewsFragment : Fragment() {
 
     fun fetchNewsFromApi(model: SharedViewModel = this.model)
     {
-        if(model.topHeadlines.keys.contains(newsCategory.name))
-            model.topHeadlines.remove(newsCategory.name)
-
-        NewsAPI.GetTopHeadlines(
+        HeadlinesRepository.getTopHeadlines(
             NewsAPI.NewsCountry,
-            newsCategory,
-            object : NewsAPI.ReturnCallback {
-                override fun callback(headlines: TopHeadlinesResult?) {
-                    if (headlines != null) {
-                        NewsCountry = NewsAPI.NewsCountry
+            newsCategory).observe(viewLifecycleOwner){
 
-                        activity?.runOnUiThread {
-                            model.topHeadlines.put(newsCategory.name, headlines.articles!!)
-                            //model.news = headlines.articles!!
-                            mAdapter = headlines.articles?.let {
-                                NewsAdapter(it)
-                            }!!
-                            mAdapter.setOnItemClickListener(object :
-                                NewsAdapter.OnItemClickListener {
-                                override fun onItemClick(itemView: View?, position: Int) {
-                                    var items = mAdapter.getItems()
-                                    var url = items[position].url
-                                    if (url != null && url.isNotEmpty()) {
-                                        val browserIntent =
-                                            Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                                        startActivity(browserIntent)
-                                    }
-                                }
-                            })
-                            mAdapter.notifyDataSetChanged()
-                            list.adapter = mAdapter
-                        }
+                if(model.topHeadlines.keys.contains(newsCategory.name))
+                    model.topHeadlines.remove(newsCategory.name)
+                NewsCountry = NewsAPI.NewsCountry
 
-                        GlobalScope.launch {
-                            NewsDB.deleteAllArticles(newsCategory)
-                            NewsDB.insertArticles(headlines.articles!!)
+                activity?.runOnUiThread {
+                    model.topHeadlines.put(newsCategory.name, it)
+                    //model.news = headlines.articles!!
+                    mAdapter = NewsAdapter(it)
+                    mAdapter.setOnItemClickListener(object :
+                        NewsAdapter.OnItemClickListener {
+                        override fun onItemClick(itemView: View?, position: Int) {
+                            var items = mAdapter.getItems()
+                            var url = items[position].url
+                            if (url != null && url.isNotEmpty()) {
+                                val browserIntent =
+                                    Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                startActivity(browserIntent)
+                            }
                         }
-                    }
+                    })
+                    mAdapter.notifyDataSetChanged()
+                    list.adapter = mAdapter
                 }
 
-            }
-        )
+                GlobalScope.launch {
+                    //NewsDB.deleteAllArticles(newsCategory)
+                    // NewsDB.insertArticles(headlines.articles!!)
+                }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

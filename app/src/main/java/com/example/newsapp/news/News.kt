@@ -2,10 +2,10 @@ package com.example.newsapp.news
 
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.room.*
+import com.squareup.moshi.Json
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
-
+/*
 @Database(entities = [Article::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
@@ -35,26 +35,22 @@ interface UserDao {
 
     @Query("DELETE FROM articles WHERE category=:category")
     fun deleteAll(category: String?)
-}
+}*/
 
-@Entity(tableName = "article-sources")
 data class Source(
-
-    @PrimaryKey(autoGenerate = true)
-    var id:Int?=null,
-    var sourceId:String?=null,
+    @Json(name="id")
+    var id:String?=null,
+    @Json(name="name")
     var name:String?=null
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
-        parcel.readInt(),
         parcel.readString(),
         parcel.readString()
     ) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        this.id?.let { parcel.writeInt(it) }
-        parcel.writeString(sourceId)
+        parcel.writeString(id)
         parcel.writeString(name)
     }
 
@@ -72,20 +68,25 @@ data class Source(
         }
     }
 }
-@Entity(tableName = "articles")
-data class Article(
-    @PrimaryKey(autoGenerate = true)
-    var id:Int?=null,
 
-    @Ignore
+data class Article(
+    @Json(name="source")
     var source: Source? = null,
+    @Json(name="author")
     var author: String? = null,
+    @Json(name="title")
     var title: String? = null,
+    @Json(name="description")
     var description: String? = null,
+    @Json(name="content")
     var content: String?=null,
+    @Json(name="publishedAt")
     var publishedAt : String?=null,
+    @Json(name="url")
     var url : String?=null,
+    @Json(name="urlToImage")
     var urlToImage : String?=null,
+
     var category: String?=null
     //
 ) : Parcelable
@@ -101,7 +102,7 @@ data class Article(
     }
 
     constructor(parcel: Parcel) : this(
-        parcel.readInt(),
+       // parcel.readInt(),
         parcel.readParcelable(Source::class.java.classLoader),
         parcel.readString(),
         parcel.readString(),
@@ -114,7 +115,7 @@ data class Article(
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        id?.let { parcel.writeInt(it) }
+       // id?.let { parcel.writeInt(it) }
         parcel.writeParcelable(source, flags)
         parcel.writeString(author)
         parcel.writeString(title)
