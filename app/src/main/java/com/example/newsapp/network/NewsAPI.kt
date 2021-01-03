@@ -3,6 +3,9 @@ package com.example.newsapp.network
 object NewsAPI {
     var NewsCountry = Countries.Slovakia
 
+    const val baseURL: String = "https://newsapi.org/v2/"
+    const val apiKey: String = "76ff51a9aa11451f93dfe57aedb57586"
+
     enum class Countries(val code: String) {
         Argentina("ar"),
         Austria("at"),

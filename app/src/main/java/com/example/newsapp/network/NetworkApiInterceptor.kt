@@ -12,7 +12,7 @@ class NetworkApiInterceptor : Interceptor
 
         val url = originalHttpUrl.newBuilder()
             .addQueryParameter("apiKey",
-                HeadlinesRepository.apiKey
+                NewsAPI.apiKey
             )
             .build()
 

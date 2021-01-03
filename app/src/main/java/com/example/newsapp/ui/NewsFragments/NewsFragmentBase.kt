@@ -19,7 +19,7 @@ import com.example.newsapp.R
 import com.example.newsapp.domain.Article
 import com.example.newsapp.domain.SharedViewModel
 import com.example.newsapp.domain.HeadlineSource
-import com.example.newsapp.domain.TopHeadlinesResult
+import com.example.newsapp.network.NetworkTopHeadlinesResult
 import com.example.newsapp.repository.HeadlinesRepository
 import com.example.newsapp.network.NewsAPI
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
@@ -50,11 +50,11 @@ abstract class NewsFragment : Fragment() {
         }
 
 
-    private val useDummyData = true
+    private val useDummyData = false
     private fun getDummyData() : ArrayList<Article>
     {
-        var headlines : TopHeadlinesResult =
-            TopHeadlinesResult()
+        var headlines : NetworkTopHeadlinesResult =
+            NetworkTopHeadlinesResult()
         headlines.articles = ArrayList()
 
         val strings = arrayOf(

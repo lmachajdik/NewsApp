@@ -1,6 +1,5 @@
 package com.example.newsapp
 
-import android.content.res.Resources
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -62,16 +61,6 @@ class NewsAdapter (private val mArticles: List<Article>) : RecyclerView.Adapter<
         val inflater = LayoutInflater.from(context)
         // Inflate the custom layout
         val contactView = inflater.inflate(R.layout.item_news_larger, parent, false)
-        contactView.setOnClickListener {
-            println(it)
-            //position
-            /*val itemPosition: Int = .getChildLayoutPosition(contactView)
-            val item: Article = getItem(itemPosition)
-            val browserIntent =
-                Intent(Intent.ACTION_VIEW, Uri.parse(item.url))
-            context.startActivity(browserIntent)*/
-        }
-        // Return a new holder instance
         return ViewHolder(contactView)
     }
 
@@ -86,9 +75,6 @@ class NewsAdapter (private val mArticles: List<Article>) : RecyclerView.Adapter<
         val descriptionTextView = viewHolder.descriptionTextView
         descriptionTextView.text = article.description
 
-        //val authorTextView = viewHolder.authorTextView
-        //authorTextView.text = article.author
-
         val sourceTextView = viewHolder.sourceTextView
         sourceTextView.text = article.source?.name
 
@@ -96,21 +82,16 @@ class NewsAdapter (private val mArticles: List<Article>) : RecyclerView.Adapter<
         datetimeTextView.text = article.datetime?.toString(DateTimeFormat.shortDateTime());
 
         val imageView = viewHolder.imageView
-        val dip = 200f
 
-        val r: Resources = viewHolder.itemView.resources
-        val px = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dip,
-            r.getDisplayMetrics()
-        )
+        val displayMetrics = viewHolder.itemView.resources.displayMetrics
 
         Glide.with(viewHolder.itemView)
             .load(article.urlToImage)
            // .error(R.drawable.ic_baseline_memory_24)
             .placeholder(R.drawable.ic_baseline_wallpaper_24)
-            .override(Target.SIZE_ORIGINAL, px.roundToInt())
-          //  .override(100 , 100)
+            .override(displayMetrics.widthPixels,
+                displayMetrics.heightPixels/2
+            )
             .into(imageView);
     }
 

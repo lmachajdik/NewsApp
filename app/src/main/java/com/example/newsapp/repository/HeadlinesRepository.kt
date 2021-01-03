@@ -6,15 +6,14 @@ import com.example.newsapp.network.GetDataService
 import com.example.newsapp.network.NetworkApiInterceptor
 import com.example.newsapp.network.NewsAPI
 import com.example.newsapp.domain.Article
-import com.example.newsapp.domain.TopHeadlinesResult
+import com.example.newsapp.network.NewsAPI.baseURL
+import com.example.newsapp.network.NetworkTopHeadlinesResult
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 internal object HeadlinesRepository {
-    const val baseURL: String = "https://newsapi.org/v2/"
-    const val apiKey: String = "76ff51a9aa11451f93dfe57aedb57586"
 
     private val client : GetDataService
 
@@ -36,8 +35,8 @@ internal object HeadlinesRepository {
         val client = client
         var call = client.getTopHeadlines(country.code,category.name)
         val data = MutableLiveData<ArrayList<Article>>()
-        call.enqueue(object : retrofit2.Callback<TopHeadlinesResult> {
-            override fun onResponse(call: Call<TopHeadlinesResult>, response: retrofit2.Response<TopHeadlinesResult>){
+        call.enqueue(object : retrofit2.Callback<NetworkTopHeadlinesResult> {
+            override fun onResponse(call: Call<NetworkTopHeadlinesResult>, response: retrofit2.Response<NetworkTopHeadlinesResult>){
                 val body = response.body()
                 if (body != null) {
                     body.articles?.forEach { article ->
@@ -47,7 +46,7 @@ internal object HeadlinesRepository {
                 }
             }
 
-            override fun onFailure(call: Call<TopHeadlinesResult>, t: Throwable) {
+            override fun onFailure(call: Call<NetworkTopHeadlinesResult>, t: Throwable) {
                 println(t.message)
             }
         })

@@ -98,21 +98,6 @@ class MainActivity : AppCompatActivity() {
             return@setOnMenuItemClickListener true
         }
 
-
-
-        /*val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener { view ->
-
-                NewsAPI.GetTopHeadlines(
-                    NewsAPI.Countries.Slovakia,
-                    NewsAPI.Categories.Science, object: NewsAPI.ReturnCallback{
-                    override fun callback(headlines: TopHeadlinesResult?) {
-                        println(headlines)
-                    }
-
-                }
-                )
-        }*/
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
@@ -131,29 +116,6 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-    }
-
-    private val listener = NavController.OnDestinationChangedListener { controller, destination, arguments ->
-    }
-
-
-
-    override fun onResume() {
-        super.onResume()
-        val navController = findNavController(R.id.nav_host_fragment)
-        navController.addOnDestinationChangedListener(listener)
-    }
-
-    override fun onPause() {
-        val navController = findNavController(R.id.nav_host_fragment)
-        navController.removeOnDestinationChangedListener(listener)
-        super.onPause()
-    }
-
-
-
-    override fun onContextItemSelected(item: MenuItem): Boolean {
-        return super.onContextItemSelected(item)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
