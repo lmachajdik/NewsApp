@@ -6,38 +6,6 @@ import com.squareup.moshi.Json
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 
-data class HeadlineSource(
-    @Json(name="id")
-    var id:String?=null,
-    @Json(name="name")
-    var name:String?=null
-) : Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readString(),
-        parcel.readString()
-    ) {
-    }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(id)
-        parcel.writeString(name)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<HeadlineSource> {
-        override fun createFromParcel(parcel: Parcel): HeadlineSource {
-            return HeadlineSource(parcel)
-        }
-
-        override fun newArray(size: Int): Array<HeadlineSource?> {
-            return arrayOfNulls(size)
-        }
-    }
-}
-
 
 data class Article(
     @Json(name="source")
