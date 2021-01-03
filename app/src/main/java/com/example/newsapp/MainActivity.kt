@@ -8,7 +8,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -88,8 +87,7 @@ class MainActivity : AppCompatActivity() {
                         .setTitle("Select Country")
                         .setItems(items, DialogInterface.OnClickListener { dialogInterface, i ->
                             NewsAPI.NewsCountry = NewsAPI.Countries.valueOf(arr[i].name)
-                            NewsFragment.currentInstance?.NewsCountry  = NewsAPI.NewsCountry
-                            NewsFragment.currentInstance?.getTopHeadlinesFromRepository() //fetch data from network for currently selected country
+                            NewsFragment.currentInstance?.getTopHeadlinesFromRepository() //fetch data from repository for currently selected country
                         })
 
                     builder.create().show()

@@ -33,19 +33,19 @@ import kotlin.collections.ArrayList
 abstract class NewsFragment : Fragment() {
     private var columnCount = 1
     private lateinit var list: RecyclerView
-    private lateinit var mAdapter : NewsAdapter
+    private var mAdapter : NewsAdapter = NewsAdapter(ArrayList())
 
     protected var newsCategory = NewsAPI.Categories.None
 
     var UpdateNeeded = false
 
-    private var _newsLanguage: NewsAPI.Countries = NewsAPI.Countries.Slovakia
-    var NewsCountry: NewsAPI.Countries
-        get() { return _newsLanguage
+    private var _newsCountry: NewsAPI.Countries = NewsAPI.Countries.Slovakia
+    var newsCountry: NewsAPI.Countries
+        get() { return _newsCountry
         }
         set(value){
-            _newsLanguage = value
-            if(NewsAPI.NewsCountry != _newsLanguage)
+            _newsCountry = value
+            if(NewsAPI.NewsCountry != _newsCountry)
                 UpdateNeeded = true
         }
 
@@ -91,22 +91,30 @@ abstract class NewsFragment : Fragment() {
         return headlines.articles!!
     }
 
-    fun getTopHeadlinesFromRepository(model: SharedViewModel = this.model)
+    fun getTopHeadlinesFromRepository()
     {
         HeadlinesRepository.getTopHeadlines(NewsAPI.NewsCountry,newsCategory)
         .observe(viewLifecycleOwner){
+            var arr = model.topHeadlines.get(newsCategory.name)?.value
+            if(arr != it)
+                model.topHeadlines.get(newsCategory.name)?.value =it
+            else
+                println()
+            /*/* var a = model?.topHeadlines?.get(newsCategory.name)?.value
+                 if(newsCountry == NewsAPI.NewsCountry &&
 
-                NewsCountry = NewsAPI.NewsCountry
+                         )*/
+                 newsCountry = NewsAPI.NewsCountry
 
-                activity?.runOnUiThread {
-                    model.topHeadlines.get(newsCategory.name)?.value = it
-                    mAdapter.notifyDataSetChanged()
-                }
+                 activity?.runOnUiThread {
+                     model.topHeadlines.get(newsCategory.name)?.value = it
+                     mAdapter.notifyDataSetChanged()
+                 }
 
-                GlobalScope.launch {
-                    //NewsDB.deleteAllArticles(newsCategory)
-                    // NewsDB.insertArticles(headlines.articles!!)
-                }
+                 GlobalScope.launch {
+                     //NewsDB.deleteAllArticles(newsCategory)
+                     // NewsDB.insertArticles(headlines.articles!!)
+                 }*/
         }
     }
 
@@ -136,14 +144,14 @@ abstract class NewsFragment : Fragment() {
         snapHelper.attachToRecyclerView(list)
 
         list.itemAnimator = SlideInUpAnimator()
+        list.adapter = mAdapter
 
         model = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
         if(!model.topHeadlines.containsKey(newsCategory.name)) { //model doesnt contain this fragment's category, initialize it
             var mld = MutableLiveData<List<Article>>()
-
             model.topHeadlines.put(newsCategory.name, mld)
-            model.topHeadlines.get(newsCategory.name)?.value = ArrayList()
+            //model.topHeadlines.get(newsCategory.name)?.value = ArrayList()
         }
 
         model.topHeadlines[newsCategory.name]?.observe(viewLifecycleOwner) {
@@ -159,17 +167,23 @@ abstract class NewsFragment : Fragment() {
                     }
                 }
             })
+            mAdapter.notifyDataSetChanged()
             list.adapter = mAdapter
-
+            newsCountry  = NewsAPI.NewsCountry
         }
 
-        if(NewsAPI.NewsCountry != _newsLanguage)
+        if(NewsAPI.NewsCountry != _newsCountry)
             UpdateNeeded = true
 
-        if(UpdateNeeded) {
-            getTopHeadlinesFromRepository(model)
-        }
-        else if (savedInstanceState != null) { //retrieve data from orientation change
+        /*if (savedInstanceState != null) { //retrieve data from orientation change
+            var arr = (savedInstanceState.get(ITEMS_KEY) as Array<Article>)
+            model.topHeadlines[newsCategory.name]?.value = arr.toList()
+        }*/
+
+        getTopHeadlinesFromRepository()
+
+
+        /*else if (savedInstanceState != null) { //retrieve data from orientation change
             var arr = (savedInstanceState.get(ITEMS_KEY) as Array<Article>)
             model.topHeadlines[newsCategory.name]?.value = arr.toList()
         }
@@ -177,8 +191,8 @@ abstract class NewsFragment : Fragment() {
             if (useDummyData) {
                 model.topHeadlines[newsCategory.name]?.value = getDummyData().toList()
             } else
-                getTopHeadlinesFromRepository(model)
-        }
+                getTopHeadlinesFromRepository()
+        }*/
 
         return view
     }
