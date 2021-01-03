@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.Target
-import com.example.newsapp.models.Article
+import com.example.newsapp.domain.Article
 import org.joda.time.format.DateTimeFormat
 import kotlin.math.roundToInt
 

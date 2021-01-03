@@ -1,42 +1,5 @@
 package com.example.newsapp.network
 
-import com.example.newsapp.models.TopHeadlinesResult
-import com.example.newsapp.repository.HeadlinesRepository
-import okhttp3.Interceptor
-import okhttp3.Response
-import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Query
-
-interface GetDataService {
-    @GET("top-headlines/")
-    fun getTopHeadlines(
-        @Query( value = "country", encoded = true) country: String?,
-        @Query( value = "category", encoded = true) category: String?
-    ) : Call<TopHeadlinesResult>
-}
-
-class NetworkApiInterceptor : Interceptor
-{
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val original = chain.request()
-        val originalHttpUrl = original.url()
-
-        val url = originalHttpUrl.newBuilder()
-            .addQueryParameter("apiKey",
-                HeadlinesRepository.apiKey
-            )
-            .build()
-
-        val requestBuilder = original.newBuilder()
-            .url(url)
-
-        val request = requestBuilder.build()
-        return chain.proceed(request)
-    }
-
-}
-
 object NewsAPI {
     var NewsCountry = Countries.Slovakia
 
@@ -50,12 +13,12 @@ object NewsAPI {
         Colombia("co"),
         China("cn"),
         Cuba("cu"),
-        CzechRepublic("cz"),
+        Czech_Republic("cz"),
         Egypt("eg"),
         France("fr"),
         Germany("de"),
         Greek("gr"),
-        HongKong("hk"),
+        Hong_Kong("hk"),
         Hungary("hu"),
         India("in"),
         Indonesia("id"),
@@ -69,7 +32,7 @@ object NewsAPI {
         Mexico("mx"),
         Morocco("ma"),
         Netherlands("nl"),
-        NewZealand("nz"),
+        New_Zealand("nz"),
         Nigeria("ng"),
         Norway("no"),
         Philippines("ph"),
@@ -77,11 +40,11 @@ object NewsAPI {
         Portugal("pt"),
         Romania("ro"),
         Russia("ru"),
-        SaudiArabia("sa"),
+        Saudi_Arabia("sa"),
         Serbia("rs"),
         Singapore("sg"),
-        SouthAfrica("za"),
-        SouthKorea("kr"),
+        South_Africa("za"),
+        South_Korea("kr"),
         Slovakia("sk"),
         Slovenia("si"),
         Sweden("se"),
@@ -90,9 +53,9 @@ object NewsAPI {
         Thailand("th"),
         Turkey("tr"),
         Ukraine("ua"),
-        UnitedArabEmirates("ae"),
-        UnitedKingdom("gb"),
-        UnitedStates("us"),
+        United_Arab_Emirates("ae"),
+        United_Kingdom("gb"),
+        United_States("us"),
         Venezuela("ve"),
     }
 

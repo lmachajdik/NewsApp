@@ -1,4 +1,4 @@
-package com.example.newsapp.NewsFragments
+package com.example.newsapp.ui.NewsFragments
 
 import android.content.Intent
 import android.net.Uri
@@ -16,10 +16,10 @@ import androidx.recyclerview.widget.SnapHelper
 import com.example.newsapp.NewsAdapter
 //import com.example.newsapp.NewsDB
 import com.example.newsapp.R
-import com.example.newsapp.models.Article
-import com.example.newsapp.models.SharedViewModel
-import com.example.newsapp.models.HeadlineSource
-import com.example.newsapp.models.TopHeadlinesResult
+import com.example.newsapp.domain.Article
+import com.example.newsapp.domain.SharedViewModel
+import com.example.newsapp.domain.HeadlineSource
+import com.example.newsapp.domain.TopHeadlinesResult
 import com.example.newsapp.repository.HeadlinesRepository
 import com.example.newsapp.network.NewsAPI
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator

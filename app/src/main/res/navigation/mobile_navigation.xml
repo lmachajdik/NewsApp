@@ -11,43 +11,43 @@
 
     <fragment
         android:id="@+id/nav_news_business"
-        android:name="com.example.newsapp.NewsFragments.BusinessNewsFragment"
+        android:name="com.example.newsapp.ui.NewsFragments.BusinessNewsFragment"
         android:label="Business"
         tools:layout="@layout/fragment_news" />
 
     <fragment
         android:id="@+id/nav_news_entertainment"
-        android:name="com.example.newsapp.NewsFragments.EntertainmentNewsFragment"
+        android:name="com.example.newsapp.ui.NewsFragments.EntertainmentNewsFragment"
         android:label="Entertainment"
         tools:layout="@layout/fragment_news" />
 
     <fragment
         android:id="@+id/nav_news_science"
-        android:name="com.example.newsapp.NewsFragments.ScienceNewsFragment"
+        android:name="com.example.newsapp.ui.NewsFragments.ScienceNewsFragment"
         android:label="Science"
         tools:layout="@layout/fragment_news" />
 
     <fragment
         android:id="@+id/nav_news_general"
-        android:name="com.example.newsapp.NewsFragments.GeneralNewsFragment"
+        android:name="com.example.newsapp.ui.NewsFragments.GeneralNewsFragment"
         android:label="General"
         tools:layout="@layout/fragment_news" />
 
     <fragment
         android:id="@+id/nav_news_health"
-        android:name="com.example.newsapp.NewsFragments.HealthNewsFragment"
+        android:name="com.example.newsapp.ui.NewsFragments.HealthNewsFragment"
         android:label="Health"
         tools:layout="@layout/fragment_news" />
 
     <fragment
         android:id="@+id/nav_news_sports"
-        android:name="com.example.newsapp.NewsFragments.SportsNewsFragment"
+        android:name="com.example.newsapp.ui.NewsFragments.SportsNewsFragment"
         android:label="Sports"
         tools:layout="@layout/fragment_news" />
 
     <fragment
         android:id="@+id/nav_news_technology"
-        android:name="com.example.newsapp.NewsFragments.TechnologyNewsFragment"
+        android:name="com.example.newsapp.ui.NewsFragments.TechnologyNewsFragment"
         android:label="Technology"
         tools:layout="@layout/fragment_news" />
 

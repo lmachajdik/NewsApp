@@ -14,7 +14,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.newsapp.NewsFragments.NewsFragment
+import com.example.newsapp.ui.NewsFragments.NewsFragment
 //import com.example.newsapp.news.AppDatabase
 import com.example.newsapp.network.NewsAPI
 import com.google.android.material.navigation.NavigationView
@@ -82,14 +82,14 @@ class MainActivity : AppCompatActivity() {
                     val items =arrayOfNulls<String>(arr.count())
                     var i = 0
                     arr.forEach {
-                        items[i] = arr[i++].name
+                        items[i] = arr[i++].name.replace('_',' ')
                     }
                     builder
                         .setTitle("Select Country")
                         .setItems(items, DialogInterface.OnClickListener { dialogInterface, i ->
                             NewsAPI.NewsCountry = NewsAPI.Countries.valueOf(arr[i].name)
                             NewsFragment.currentInstance?.NewsCountry  = NewsAPI.NewsCountry
-                            NewsFragment.currentInstance?.getTopHeadlinesFromRepository() //update for currently selected country
+                            NewsFragment.currentInstance?.getTopHeadlinesFromRepository() //fetch data from network for currently selected country
                         })
 
                     builder.create().show()

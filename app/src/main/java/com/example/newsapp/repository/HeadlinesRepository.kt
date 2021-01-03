@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import com.example.newsapp.network.GetDataService
 import com.example.newsapp.network.NetworkApiInterceptor
 import com.example.newsapp.network.NewsAPI
-import com.example.newsapp.models.Article
-import com.example.newsapp.models.TopHeadlinesResult
+import com.example.newsapp.domain.Article
+import com.example.newsapp.domain.TopHeadlinesResult
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -31,7 +31,7 @@ internal object HeadlinesRepository {
             client = retrofit.create(GetDataService::class.java)
     }
 
-    private fun getFromNetwork(country: NewsAPI.Countries, category: NewsAPI.Categories) : LiveData<ArrayList<Article>>
+    private fun getHeadlinesFromNetwork(country: NewsAPI.Countries, category: NewsAPI.Categories) : LiveData<ArrayList<Article>>
     {
         val client = client
         var call = client.getTopHeadlines(country.code,category.name)
@@ -56,7 +56,7 @@ internal object HeadlinesRepository {
 
     fun getTopHeadlines(country: NewsAPI.Countries, category: NewsAPI.Categories) : LiveData<ArrayList<Article>>
     {
-        var data = getFromNetwork(country,category)
+        var data = getHeadlinesFromNetwork(country,category)
         return data
     }
 

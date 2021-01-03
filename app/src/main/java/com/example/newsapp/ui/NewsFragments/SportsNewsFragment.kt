@@ -1,4 +1,4 @@
-package com.example.newsapp.NewsFragments
+package com.example.newsapp.ui.NewsFragments
 
 import android.os.Bundle
 import com.example.newsapp.network.NewsAPI
