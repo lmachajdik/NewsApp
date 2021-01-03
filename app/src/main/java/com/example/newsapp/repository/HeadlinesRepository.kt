@@ -39,7 +39,7 @@ internal object HeadlinesRepository {
     private fun getHeadlinesFromNetwork(country: NewsAPI.Countries, category: NewsAPI.Categories) : LiveData<List<Article>>
     {
         val client = client
-        var call = client.getTopHeadlines(country.code,category.name)
+        var call = client.getTopHeadlines(country.code,category.apiName)
         val data = MutableLiveData<List<Article>>()
         call.enqueue(object : retrofit2.Callback<NetworkTopHeadlinesResult> {
             override fun onResponse(call: Call<NetworkTopHeadlinesResult>, response: retrofit2.Response<NetworkTopHeadlinesResult>){

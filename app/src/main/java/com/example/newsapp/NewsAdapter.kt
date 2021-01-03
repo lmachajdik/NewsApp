@@ -87,11 +87,12 @@ class NewsAdapter (private val mArticles: List<Article>) : RecyclerView.Adapter<
 
         Glide.with(viewHolder.itemView)
             .load(article.urlToImage)
-           // .error(R.drawable.ic_baseline_memory_24)
+            .error(R.drawable.ic_baseline_broken_image_100)
             .placeholder(R.drawable.ic_baseline_wallpaper_24)
             .override(displayMetrics.widthPixels,
                 displayMetrics.heightPixels/2
             )
+            .fitCenter()
             .into(imageView);
     }
 

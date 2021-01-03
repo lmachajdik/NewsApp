@@ -35,7 +35,7 @@ abstract class NewsFragment : Fragment() {
     private lateinit var list: RecyclerView
     private var mAdapter : NewsAdapter = NewsAdapter(ArrayList())
 
-    protected var newsCategory = NewsAPI.Categories.None
+    protected var newsCategory = NewsAPI.Categories.Mixed
 
     var UpdateNeeded = false
 

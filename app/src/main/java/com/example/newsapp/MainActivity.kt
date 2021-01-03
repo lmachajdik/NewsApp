@@ -107,6 +107,7 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_news_entertainment,
             R.id.nav_news_general,
             R.id.nav_news_health,
+            R.id.nav_news_mixed,
             R.id.nav_news_science,
             R.id.nav_news_sports,
             R.id.nav_news_technology,

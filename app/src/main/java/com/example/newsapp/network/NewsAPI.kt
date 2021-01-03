@@ -62,18 +62,14 @@ object NewsAPI {
         Venezuela("ve"),
     }
 
-    enum class Categories {
-        Business,
-        Entertainment,
-        General,
-        Health,
-        Science,
-        Sports,
-        Technology,
-        None;
-
-        override fun toString(): String {
-            return this.name // working!
-        }
+    enum class Categories(val apiName:String) {
+        Business("business"),
+        Entertainment("entertainment"),
+        General("general"),
+        Health("health"),
+        Science("science"),
+        Sports("sports"),
+        Technology("technology"),
+        Mixed("");
     }
 }
