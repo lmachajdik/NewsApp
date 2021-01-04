@@ -1,8 +1,7 @@
 package com.example.newsapp.repository
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
+import com.example.newsapp.database.NewsDB
 import com.example.newsapp.network.GetDataService
 import com.example.newsapp.network.NetworkApiInterceptor
 import com.example.newsapp.network.NewsAPI
@@ -12,10 +11,16 @@ import com.example.newsapp.domain.SharedViewModel
 import com.example.newsapp.network.NewsAPI.baseURL
 import com.example.newsapp.network.NetworkTopHeadlinesResult
 import com.example.newsapp.ui.NewsFragments.NewsFragment
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.*
+import kotlin.collections.ArrayList
 
 internal object HeadlinesRepository {
 
@@ -23,6 +28,8 @@ internal object HeadlinesRepository {
 
     var countryChange = false
     private const val UPDATE_TIME_HOURS = 1 //new articles are available with 1 hour delay
+
+    private lateinit var dbLoad: Hashtable<NewsAPI.Categories,Boolean>
 
     init{
             val okHttpClient = OkHttpClient.Builder()
@@ -35,6 +42,10 @@ internal object HeadlinesRepository {
                 .client(okHttpClient)
                 .build()
             client = retrofit.create(GetDataService::class.java)
+
+            dbLoad = Hashtable()
+            for(category in NewsAPI.Categories.values())
+                dbLoad.put(category,true)
     }
 
     fun getPureDummyData() : List<Article>
@@ -74,7 +85,7 @@ internal object HeadlinesRepository {
         return articles
     }
 
-    private val useDummyData = true
+    private val useDummyData = false
     fun getDummyData() : MutableLiveData<List<Article>>
     {
         var headlines = MutableLiveData<List<Article>>()
@@ -96,6 +107,14 @@ internal object HeadlinesRepository {
                         article.category = category.name
                     }
                     data.value = body.articles
+
+                    GlobalScope.launch {
+                        body.articles?.toList()?.let {
+                            NewsDB.deleteAllArticles(category)
+
+                            NewsDB.insertArticles(it)
+                        }
+                    }
                 }
             }
 
@@ -103,6 +122,31 @@ internal object HeadlinesRepository {
                 println(t.message)
             }
         })
+        return data
+    }
+
+    private fun getHeadlinesFromLocalDatabase(country: NewsAPI.Countries, category: NewsAPI.Categories) : LiveData<List<Article>>
+    {
+        var data : MutableLiveData<List<Article>> = MutableLiveData()
+        GlobalScope.launch() {
+            var articles : List<Article>? = NewsDB.getArticles(category)
+            if (articles != null && articles.count() != 0) {
+                withContext(Dispatchers.Main) {
+                    data.value = articles
+                }
+            }
+            else
+            {
+                var a= getHeadlinesFromNetwork(country, category)
+                withContext(Dispatchers.Main) {
+                    NewsFragment.currentInstance?.viewLifecycleOwner?.let {
+                        a.observe(it){
+                            data.value = it
+                        }
+                    }
+                }
+            }
+        }
         return data
     }
 
@@ -127,7 +171,13 @@ internal object HeadlinesRepository {
         if(country != NewsFragment.currentInstance?.newsCountry)
             countryChange = true
 
-        if(!countryChange)
+
+        if(dbLoad[category]!!)
+        {
+            dbLoad[category] = false
+            data = getHeadlinesFromLocalDatabase(country,category)
+        }
+        else if(!countryChange)
         {
             var localModelHeadlines = NewsFragment.currentInstance?.model?.topHeadlines?.get(category.name)?.value
             if(localModelHeadlines != null && localModelHeadlines?.count()  != 0) //if local model is not empty
@@ -139,10 +189,7 @@ internal object HeadlinesRepository {
             }
             else //local model empty
             {
-                //TODO decide between network or db
-
                 data = getHeadlinesFromNetwork(country, category)
-
             }
         }
         else

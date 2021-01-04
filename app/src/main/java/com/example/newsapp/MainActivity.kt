@@ -37,10 +37,10 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         GlobalScope.launch {
-
             var a = NewsDB.getArticles()
-            var td = HeadlinesRepository.getPureDummyData()
-            NewsDB.insertArticles(td)
+          //  NewsDB.deleteAllArticles()
+
+            var b = NewsDB.getArticles()
             println()
         }
 
