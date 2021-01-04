@@ -1,40 +1,44 @@
 package com.example.newsapp.ui.NewsFragments
 
+//import com.example.newsapp.database.NewsDB
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.recyclerview.widget.SnapHelper
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.newsapp.NewsAdapter
-//import com.example.newsapp.database.NewsDB
 import com.example.newsapp.R
 import com.example.newsapp.domain.Article
 import com.example.newsapp.domain.SharedViewModel
-import com.example.newsapp.domain.HeadlineSource
-import com.example.newsapp.network.NetworkTopHeadlinesResult
-import com.example.newsapp.repository.HeadlinesRepository
 import com.example.newsapp.network.NewsAPI
+import com.example.newsapp.repository.HeadlinesRepository
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlin.collections.ArrayList
+import kotlinx.coroutines.withContext
 
 /**
  * A fragment representing a list of Items.
  */
-abstract class NewsFragment : Fragment() {
+abstract class NewsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private var columnCount = 1
     private lateinit var list: RecyclerView
     private var mAdapter : NewsAdapter = NewsAdapter(ArrayList())
-
+    private lateinit var mSwipeRefreshLayout : SwipeRefreshLayout
     protected var newsCategory = NewsAPI.Categories.Mixed
 
     var UpdateNeeded = false
@@ -49,31 +53,38 @@ abstract class NewsFragment : Fragment() {
                 UpdateNeeded = true
         }
 
-    fun getTopHeadlinesFromRepository()
+    fun updateDataFromRepository()
     {
-        HeadlinesRepository.getTopHeadlines(NewsAPI.NewsCountry,newsCategory)
-        .observe(viewLifecycleOwner){
-            var arr = model.topHeadlines.get(newsCategory.name)?.value
-            if(arr != it)
-                model.topHeadlines.get(newsCategory.name)?.value =it
-            else
-                println()
-            /*/* var a = model?.topHeadlines?.get(newsCategory.name)?.value
-                 if(newsCountry == NewsAPI.NewsCountry &&
+        val job = GlobalScope.launch {
+            var a =HeadlinesRepository.getTopHeadlines(NewsAPI.NewsCountry,newsCategory)
 
-                         )*/
-                 newsCountry = NewsAPI.NewsCountry
+            withContext(Dispatchers.Main) {
+                a.observe(viewLifecycleOwner) {
+                var arr = model.topHeadlines.get(newsCategory.name)?.value
+                if (arr != it)
+                    model.topHeadlines.get(newsCategory.name)?.value = it
 
-                 activity?.runOnUiThread {
-                     model.topHeadlines.get(newsCategory.name)?.value = it
-                     mAdapter.notifyDataSetChanged()
-                 }
-
-                 GlobalScope.launch {
-                     //NewsDB.deleteAllArticles(newsCategory)
-                     // NewsDB.insertArticles(headlines.articles!!)
-                 }*/
+                mSwipeRefreshLayout.isRefreshing = false
+                }
+            }
         }
+
+        object : CountDownTimer(2050, 500) {
+            override fun onFinish() {
+                if(mSwipeRefreshLayout.isRefreshing) {
+                    mSwipeRefreshLayout.isRefreshing = false
+
+                    Toast.makeText(
+                        context,
+                        "There was a problem connecting to network",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    job.cancel()
+                }
+            }
+
+            override fun onTick(p0: Long) { }
+        }.start()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -133,12 +144,27 @@ abstract class NewsFragment : Fragment() {
         if(NewsAPI.NewsCountry != _newsCountry)
             UpdateNeeded = true
 
+        mSwipeRefreshLayout = view.findViewById(R.id.swipe_container) as SwipeRefreshLayout
+        mSwipeRefreshLayout.setOnRefreshListener(this)
+        mSwipeRefreshLayout.setColorSchemeResources(
+            R.color.colorPrimary,
+            android.R.color.holo_green_dark,
+            android.R.color.holo_orange_dark,
+            android.R.color.holo_blue_dark
+        )
+
+        mSwipeRefreshLayout.post {
+            mSwipeRefreshLayout.isRefreshing = true
+
+            // Fetching data from server
+            updateDataFromRepository()
+        }
+
         /*if (savedInstanceState != null) { //retrieve data from orientation change
             var arr = (savedInstanceState.get(ITEMS_KEY) as Array<Article>)
             model.topHeadlines[newsCategory.name]?.value = arr.toList()
         }*/
 
-        getTopHeadlinesFromRepository()
 
 
         /*else if (savedInstanceState != null) { //retrieve data from orientation change
@@ -170,5 +196,9 @@ abstract class NewsFragment : Fragment() {
         const val ITEMS_KEY = "list"
         const val ARG_COLUMN_COUNT = "column-count"
         var currentInstance: NewsFragment? = null
+    }
+
+    override fun onRefresh() {
+        updateDataFromRepository()
     }
 }

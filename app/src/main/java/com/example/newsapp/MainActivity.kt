@@ -16,7 +16,6 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.newsapp.database.NewsDB
 import com.example.newsapp.network.NewsAPI
-import com.example.newsapp.repository.HeadlinesRepository
 import com.example.newsapp.ui.NewsFragments.NewsFragment
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.GlobalScope
@@ -64,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                         .setTitle("Select Country")
                         .setItems(items, DialogInterface.OnClickListener { dialogInterface, i ->
                             NewsAPI.NewsCountry = NewsAPI.Countries.valueOf(arr[i].name)
-                            NewsFragment.currentInstance?.getTopHeadlinesFromRepository() //fetch data from repository for currently selected country
+                            NewsFragment.currentInstance?.updateDataFromRepository() //fetch data from repository for currently selected country
                         })
 
                     builder.create().show()

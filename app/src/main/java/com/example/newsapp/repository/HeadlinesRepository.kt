@@ -29,7 +29,7 @@ internal object HeadlinesRepository {
     var countryChange = false
     private const val UPDATE_TIME_HOURS = 1 //new articles are available with 1 hour delay
 
-    private lateinit var dbLoad: Hashtable<NewsAPI.Categories,Boolean>
+    private var dbLoad: Hashtable<NewsAPI.Categories,Boolean>
 
     init{
             val okHttpClient = OkHttpClient.Builder()
@@ -125,29 +125,48 @@ internal object HeadlinesRepository {
         return data
     }
 
-    private fun getHeadlinesFromLocalDatabase(country: NewsAPI.Countries, category: NewsAPI.Categories) : LiveData<List<Article>>
+    private fun getDataOnFirstStart(country: NewsAPI.Countries, category: NewsAPI.Categories) : LiveData<List<Article>>
     {
         var data : MutableLiveData<List<Article>> = MutableLiveData()
-        GlobalScope.launch() {
-            var articles : List<Article>? = NewsDB.getArticles(category)
-            if (articles != null && articles.count() != 0) {
-                withContext(Dispatchers.Main) {
-                    data.value = articles
-                }
-            }
-            else
-            {
+
+        val fetchFromInternet = {
+            GlobalScope.launch {
                 var a= getHeadlinesFromNetwork(country, category)
                 withContext(Dispatchers.Main) {
                     NewsFragment.currentInstance?.viewLifecycleOwner?.let {
                         a.observe(it){
                             data.value = it
+                            println("fetched newest from network")
                         }
                     }
                 }
             }
         }
+
+        GlobalScope.launch() {
+            var articles : List<Article>? = NewsDB.getArticles(category)
+            if (articles != null && articles.count() != 0) {
+                withContext(Dispatchers.Main) {
+                    data.value = articles
+                    println("fetched from database")
+                    if(isOutdated(articles)) //data in local DB might be outdated
+                    {
+                        fetchFromInternet()
+                    }
+                }
+            }
+            else
+            {
+                fetchFromInternet()
+            }
+        }
+
         return data
+    }
+
+    private fun isOutdated(localModelHeadlines:List<Article>?) : Boolean
+    {
+            return localModelHeadlines?.firstOrNull()?.datetime?.plusHours(UPDATE_TIME_HOURS)?.isBeforeNow!!
     }
 
     private fun getHeadlinesFromLocalModel(country: NewsAPI.Countries, category: NewsAPI.Categories) : LiveData<List<Article>>
@@ -175,14 +194,14 @@ internal object HeadlinesRepository {
         if(dbLoad[category]!!)
         {
             dbLoad[category] = false
-            data = getHeadlinesFromLocalDatabase(country,category)
+            data = getDataOnFirstStart(country,category) //fetch from db, if data might be outdated - fetch from network
         }
         else if(!countryChange)
         {
             var localModelHeadlines = NewsFragment.currentInstance?.model?.topHeadlines?.get(category.name)?.value
             if(localModelHeadlines != null && localModelHeadlines?.count()  != 0) //if local model is not empty
             {
-                if(localModelHeadlines?.firstOrNull()?.datetime?.plusHours(UPDATE_TIME_HOURS)?.isBeforeNow!!) //if at least UPDATE_TIME_HOURS hours passed since latest news
+                if(isOutdated(localModelHeadlines)) //if at least UPDATE_TIME_HOURS hours passed since latest news
                     data = getHeadlinesFromNetwork(country,category)
                 else //local model news are up to date //TODO consider removing later, might be redundant
                     data = getHeadlinesFromLocalModel(country,category)
