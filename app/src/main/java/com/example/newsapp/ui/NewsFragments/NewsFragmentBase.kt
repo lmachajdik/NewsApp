@@ -69,9 +69,9 @@ abstract class NewsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             }
         }
 
-        object : CountDownTimer(2050, 500) {
+        object : CountDownTimer(3000, 500) {
             override fun onFinish() {
-                if(mSwipeRefreshLayout.isRefreshing) {
+                if(mSwipeRefreshLayout.isRefreshing) { //if swipe is still refreshing, fetching data was not completed yet, but it timed out nevertheless
                     mSwipeRefreshLayout.isRefreshing = false
 
                     Toast.makeText(
@@ -83,7 +83,11 @@ abstract class NewsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                 }
             }
 
-            override fun onTick(p0: Long) { }
+            override fun onTick(p0: Long) {
+                if(!mSwipeRefreshLayout.isRefreshing) { //if swipe is not refreshing, fetching data finished and we can cancel timer
+                    this.cancel()
+                }
+            }
         }.start()
     }
 

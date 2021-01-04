@@ -35,16 +35,6 @@ class MainActivity : AppCompatActivity() {
         NewsDB.init(this)
         setSupportActionBar(toolbar)
 
-        GlobalScope.launch {
-            var a = NewsDB.getArticles()
-          //  NewsDB.deleteAllArticles()
-
-            var b = NewsDB.getArticles()
-            println()
-        }
-
-
-
         toolbar.setOnMenuItemClickListener { it: MenuItem? ->
             if(it?.itemId == R.id.newsCountry_settings)
             {
