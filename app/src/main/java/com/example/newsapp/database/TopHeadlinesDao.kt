@@ -1,11 +1,15 @@
 package com.example.newsapp.database
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
-import com.example.newsapp.domain.Article
-import com.example.newsapp.network.NewsAPI
+import androidx.room.*
+
+@Dao
+interface SourcesDao{
+    @Query("SELECT * FROM article_sources WHERE source_id = (:id)")
+    fun getSourceById(id: String): HeadlineSourceEntity
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(source: HeadlineSourceEntity)
+}
 
 @Dao
 interface TopHeadlinesDao {

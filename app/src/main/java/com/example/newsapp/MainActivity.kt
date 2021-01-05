@@ -15,6 +15,8 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.newsapp.database.NewsDB
+import com.example.newsapp.domain.Article
+import com.example.newsapp.domain.HeadlineSource
 import com.example.newsapp.network.NewsAPI
 import com.example.newsapp.ui.NewsFragments.NewsFragment
 import com.google.android.material.navigation.NavigationView
@@ -34,6 +36,22 @@ class MainActivity : AppCompatActivity() {
         JodaTimeAndroid.init(this)
         NewsDB.init(this)
         setSupportActionBar(toolbar)
+
+        GlobalScope.launch {
+/*
+            var b = HeadlineSource("pravda.sk","pravda")
+            var c = Article(b,"","qqqqqqqqqqq","ddddddddddddddd","cccccccccc","","","","")
+            var r = Array<Article>(1) {
+                c
+            }
+
+            NewsDB.insertArticles(r.toList())
+            //NewsDB.insertSource(b)
+            var q = NewsDB.getSourceById("pravda.sk")
+
+            var a=NewsDB.getArticles()
+            println()*/
+        }
 
         toolbar.setOnMenuItemClickListener { it: MenuItem? ->
             if(it?.itemId == R.id.newsCountry_settings)

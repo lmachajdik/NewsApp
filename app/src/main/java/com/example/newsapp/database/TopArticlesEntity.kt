@@ -1,21 +1,25 @@
 package com.example.newsapp.database
 
-import android.os.Parcelable
-import androidx.room.Entity
-import androidx.room.Ignore
-import androidx.room.PrimaryKey
+import androidx.annotation.NonNull
+import androidx.room.*
 import com.example.newsapp.domain.HeadlineSource
 
 @Entity(tableName = "article_sources")
 data class HeadlineSourceEntity(
-    @PrimaryKey var id:String?=null,
-    var name:String?=null
+     var source_id:String?=null,
+     @PrimaryKey var name:String
 )
 
 @Entity(tableName = "top_articles")
 data class TopArticlesEntity(
-    @PrimaryKey(autoGenerate = true) var id: Int,
-    @Ignore
+    @PrimaryKey(autoGenerate = true) var article_id: Int,
+   /* @ForeignKey(
+        entity = HeadlineSourceEntity::class,
+        parentColumns = ["id"],
+        childColumns = ["source_id"],
+        onDelete = ForeignKey.CASCADE)
+    var source_id: String? = null,*/
+    @Embedded
     var source: HeadlineSource? = null,
     var author: String? = null,
     var title: String? = null,
@@ -35,11 +39,13 @@ data class TopArticlesEntity(
                 publishedAt: String?,
                 url: String?,
                 urlToImage: String?,
-                category: String?) : this(0, source,author,title,description,content,publishedAt,url,urlToImage,category)
+                category: String?) : this(0,
+        //source?.id,
+        source,author,title,description,content,publishedAt,url,urlToImage,category)
     {
 
     }
 
-    constructor() : this(id=0)
+    constructor() : this(article_id=0)
 
 }

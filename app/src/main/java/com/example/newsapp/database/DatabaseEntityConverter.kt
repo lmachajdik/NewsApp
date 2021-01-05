@@ -1,6 +1,7 @@
 package com.example.newsapp.database
 
 import com.example.newsapp.domain.Article
+import com.example.newsapp.domain.HeadlineSource
 
 object DatabaseEntityConverter {
     fun EntityToArticle(entity: TopArticlesEntity) : Article{
@@ -41,6 +42,23 @@ object DatabaseEntityConverter {
         return entity.map {
             ArticleToEntity(it)
         }
+    }
+
+    fun EntityToSource(entity: HeadlineSourceEntity?) : HeadlineSource?{
+        if (entity != null) {
+            return HeadlineSource(
+                entity?.source_id,
+                entity.name
+            )
+        }
+        return null
+    }
+
+    fun SourceToEntity(entity: HeadlineSource) : HeadlineSourceEntity{
+        return HeadlineSourceEntity(
+            entity.id,
+            entity.name
+        )
     }
 
 }

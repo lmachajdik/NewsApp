@@ -121,7 +121,7 @@ abstract class NewsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
         model = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
-        if(!model.topHeadlines.containsKey(newsCategory.name)) { //model doesnt contain this fragment's category, initialize it
+        if(!model.topHeadlines.containsKey(newsCategory.name)) { //model doesnt contain this fragment's category, initialize it empty
             var mld = MutableLiveData<List<Article>>()
             model.topHeadlines.put(newsCategory.name, mld)
             //model.topHeadlines.get(newsCategory.name)?.value = ArrayList()
@@ -163,24 +163,6 @@ abstract class NewsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             // Fetching data from server
             updateDataFromRepository()
         }
-
-        /*if (savedInstanceState != null) { //retrieve data from orientation change
-            var arr = (savedInstanceState.get(ITEMS_KEY) as Array<Article>)
-            model.topHeadlines[newsCategory.name]?.value = arr.toList()
-        }*/
-
-
-
-        /*else if (savedInstanceState != null) { //retrieve data from orientation change
-            var arr = (savedInstanceState.get(ITEMS_KEY) as Array<Article>)
-            model.topHeadlines[newsCategory.name]?.value = arr.toList()
-        }
-        else if(model.topHeadlines.get(newsCategory.name)?.value?.count()  == 0) { //if local model is empty
-            if (useDummyData) {
-                model.topHeadlines[newsCategory.name]?.value = getDummyData().toList()
-            } else
-                getTopHeadlinesFromRepository()
-        }*/
 
         return view
     }

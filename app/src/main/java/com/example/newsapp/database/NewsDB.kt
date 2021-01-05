@@ -5,11 +5,13 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.newsapp.domain.Article
+import com.example.newsapp.domain.HeadlineSource
 import com.example.newsapp.network.NewsAPI
 
-@Database(entities = arrayOf(TopArticlesEntity::class), version = 2)
+@Database(entities = [TopArticlesEntity::class, HeadlineSourceEntity::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun articlesDao(): TopHeadlinesDao
+    abstract fun sourcesDao(): SourcesDao
 }
 
 object NewsDB{
@@ -33,8 +35,9 @@ object NewsDB{
 
     fun getArticles(category: NewsAPI.Categories) : List<Article>
     {
+        var b =  db.articlesDao().getAllByCategory(category.name)
         return DatabaseEntityConverter.EntityToArticle(
-            db.articlesDao().getAllByCategory(category.name)
+           b
         )
     }
 
@@ -50,9 +53,18 @@ object NewsDB{
         db.articlesDao().deleteAll(category.name)
     }
 
-    fun deleteAllArticles()
+    fun getSourceById(id: String) : HeadlineSource?
     {
-        db.articlesDao().deleteAll()
+        return DatabaseEntityConverter.EntityToSource(
+            db.sourcesDao().getSourceById(id)
+        )
+    }
+
+    fun insertSource(source: HeadlineSource)
+    {
+        db.sourcesDao().insert(
+            DatabaseEntityConverter.SourceToEntity(source)
+        )
     }
 
 }

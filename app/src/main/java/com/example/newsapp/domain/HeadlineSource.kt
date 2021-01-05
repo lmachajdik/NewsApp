@@ -8,11 +8,11 @@ data class HeadlineSource(
     @Json(name="id")
     var id:String?=null,
     @Json(name="name")
-    var name:String?=null
+    var name:String
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
-        parcel.readString()
+        parcel.readString().toString()
     ) {
     }
 
