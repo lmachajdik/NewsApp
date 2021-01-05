@@ -54,9 +54,9 @@
             android:checkable="false"/>
 
             <item
-                android:id="@+id/nav_home"
-                android:icon="@drawable/ic_menu_camera"
-                android:title="@string/menu_home" />
+                android:id="@+id/nav_search"
+                android:icon="@drawable/ic_baseline_search_24"
+                android:title="@string/menu_search" />
             <item
                 android:id="@+id/nav_gallery"
                 android:icon="@drawable/ic_menu_gallery"

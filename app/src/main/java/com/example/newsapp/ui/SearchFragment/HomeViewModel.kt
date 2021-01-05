@@ -1,4 +1,4 @@
-package com.example.newsapp.ui.home
+package com.example.newsapp.ui.SearchFragment
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

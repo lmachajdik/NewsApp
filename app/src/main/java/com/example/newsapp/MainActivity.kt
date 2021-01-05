@@ -3,7 +3,6 @@ package com.example.newsapp
 //import com.example.newsapp.news.AppDatabase
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -15,10 +14,8 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.newsapp.database.NewsDB
-import com.example.newsapp.domain.Article
-import com.example.newsapp.domain.HeadlineSource
 import com.example.newsapp.network.NewsAPI
-import com.example.newsapp.ui.NewsFragments.NewsFragment
+import com.example.newsapp.ui.TopHeadlinesFragments.NewsFragment
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -95,17 +92,19 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_news_science,
             R.id.nav_news_sports,
             R.id.nav_news_technology,
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow), drawerLayout)
+
+            R.id.nav_search,
+            R.id.nav_gallery, R.id.nav_slideshow), drawerLayout)
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+   /* override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
+       // menuInflater.inflate(R.menu.main, menu)
         return true
-    }
+    }*/
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)

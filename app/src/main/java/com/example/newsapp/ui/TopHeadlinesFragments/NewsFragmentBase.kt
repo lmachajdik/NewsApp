@@ -1,13 +1,11 @@
-package com.example.newsapp.ui.NewsFragments
+package com.example.newsapp.ui.TopHeadlinesFragments
 
 //import com.example.newsapp.database.NewsDB
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -106,6 +104,7 @@ abstract class NewsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_news_list, container, false)
+        setHasOptionsMenu(true)
         list = view.findViewById(R.id.list)
         val itemDecoration: ItemDecoration =
             DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
@@ -165,6 +164,11 @@ abstract class NewsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         }
 
         return view
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.main, menu)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

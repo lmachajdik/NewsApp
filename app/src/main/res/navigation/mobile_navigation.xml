@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_gallery"
+    app:startDestination="@+id/nav_search"
     app:itemIconTint="@animator/navigation_view_icon_tint_selector"
     app:itemTextColor="@color/colorPrimary"
     android:background="@color/colorPrimaryDark"
@@ -11,58 +11,58 @@
 
     <fragment
         android:id="@+id/nav_news_business"
-        android:name="com.example.newsapp.ui.NewsFragments.BusinessNewsFragment"
+        android:name="com.example.newsapp.ui.TopHeadlinesFragments.BusinessNewsFragment"
         android:label="Business"
         tools:layout="@layout/fragment_news" />
 
     <fragment
         android:id="@+id/nav_news_entertainment"
-        android:name="com.example.newsapp.ui.NewsFragments.EntertainmentNewsFragment"
+        android:name="com.example.newsapp.ui.TopHeadlinesFragments.EntertainmentNewsFragment"
         android:label="Entertainment"
         tools:layout="@layout/fragment_news" />
 
     <fragment
         android:id="@+id/nav_news_science"
-        android:name="com.example.newsapp.ui.NewsFragments.ScienceNewsFragment"
+        android:name="com.example.newsapp.ui.TopHeadlinesFragments.ScienceNewsFragment"
         android:label="Science"
         tools:layout="@layout/fragment_news" />
 
     <fragment
         android:id="@+id/nav_news_general"
-        android:name="com.example.newsapp.ui.NewsFragments.GeneralNewsFragment"
+        android:name="com.example.newsapp.ui.TopHeadlinesFragments.GeneralNewsFragment"
         android:label="General"
         tools:layout="@layout/fragment_news" />
 
     <fragment
         android:id="@+id/nav_news_mixed"
-        android:name="com.example.newsapp.ui.NewsFragments.MixedNewsFragment"
+        android:name="com.example.newsapp.ui.TopHeadlinesFragments.MixedNewsFragment"
         android:label="Mixed"
         tools:layout="@layout/fragment_news" />
 
 
     <fragment
         android:id="@+id/nav_news_health"
-        android:name="com.example.newsapp.ui.NewsFragments.HealthNewsFragment"
+        android:name="com.example.newsapp.ui.TopHeadlinesFragments.HealthNewsFragment"
         android:label="Health"
         tools:layout="@layout/fragment_news" />
 
     <fragment
         android:id="@+id/nav_news_sports"
-        android:name="com.example.newsapp.ui.NewsFragments.SportsNewsFragment"
+        android:name="com.example.newsapp.ui.TopHeadlinesFragments.SportsNewsFragment"
         android:label="Sports"
         tools:layout="@layout/fragment_news" />
 
     <fragment
         android:id="@+id/nav_news_technology"
-        android:name="com.example.newsapp.ui.NewsFragments.TechnologyNewsFragment"
+        android:name="com.example.newsapp.ui.TopHeadlinesFragments.TechnologyNewsFragment"
         android:label="Technology"
         tools:layout="@layout/fragment_news" />
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="com.example.newsapp.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/nav_search"
+        android:name="com.example.newsapp.ui.SearchFragment.SearchFragment"
+        android:label="@string/menu_search"
+        tools:layout="@layout/fragment_search" />
 
     <fragment
         android:id="@+id/nav_gallery"

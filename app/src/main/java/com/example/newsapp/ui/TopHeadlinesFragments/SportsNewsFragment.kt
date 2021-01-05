@@ -1,11 +1,11 @@
-package com.example.newsapp.ui.NewsFragments
+package com.example.newsapp.ui.TopHeadlinesFragments
 
 import android.os.Bundle
 import com.example.newsapp.network.NewsAPI
 
-class EntertainmentNewsFragment : NewsFragment() {
+class SportsNewsFragment : NewsFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        super.newsCategory = NewsAPI.Categories.Entertainment
+        super.newsCategory = NewsAPI.Categories.Sports
     }
 }

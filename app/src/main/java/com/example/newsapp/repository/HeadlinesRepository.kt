@@ -9,8 +9,8 @@ import com.example.newsapp.domain.Article
 import com.example.newsapp.domain.HeadlineSource
 import com.example.newsapp.domain.SharedViewModel
 import com.example.newsapp.network.NewsAPI.baseURL
-import com.example.newsapp.network.NetworkTopHeadlinesResult
-import com.example.newsapp.ui.NewsFragments.NewsFragment
+import com.example.newsapp.network.NetworkHeadlinesResult
+import com.example.newsapp.ui.TopHeadlinesFragments.NewsFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -24,32 +24,31 @@ import kotlin.collections.ArrayList
 
 internal object HeadlinesRepository {
 
-    private val client : GetDataService
+    private val client: GetDataService
 
     var countryChange = false
     private const val UPDATE_TIME_HOURS = 1 //new articles are available with 1 hour delay
 
-    private var dbLoad: Hashtable<NewsAPI.Categories,Boolean>
+    private var dbLoad: Hashtable<NewsAPI.Categories, Boolean>
 
-    init{
-            val okHttpClient = OkHttpClient.Builder()
-                .addInterceptor(NetworkApiInterceptor())
-                .build()
+    init {
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(NetworkApiInterceptor())
+            .build()
 
-            var retrofit = Retrofit.Builder()
-                .baseUrl(baseURL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(okHttpClient)
-                .build()
-            client = retrofit.create(GetDataService::class.java)
+        var retrofit = Retrofit.Builder()
+            .baseUrl(baseURL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+        client = retrofit.create(GetDataService::class.java)
 
-            dbLoad = Hashtable()
-            for(category in NewsAPI.Categories.values())
-                dbLoad.put(category,true)
+        dbLoad = Hashtable()
+        for (category in NewsAPI.Categories.values())
+            dbLoad.put(category, true)
     }
 
-    fun getPureDummyData() : List<Article>
-    {
+    fun getPureDummyData(): List<Article> {
         val imgsUrl = arrayOf(
             //"invalid url",
             "https://www.gannett-cdn.com/presto/2020/12/23/USAT/ebfbf052-9030-4f19-af89-841dc435c9bd-WW84-09854r.jpg?crop=2279,1282,x0,y0&width=1600&height=800&fit=bounds",
@@ -79,28 +78,46 @@ internal object HeadlinesRepository {
             //"https://g.foolcdn.com/editorial/images/605979/family-watching-tv-getty-6217.jpg"
             a.url =
                 "https://www.fool.com/investing/2020/12/26/got-3000-these-3-tech-stocks-could-make-you-rich-i/"
-            a.publishedAt= (++year).toString() + "-12-03T22:00:00Z"
+            a.publishedAt = (++year).toString() + "-12-03T22:00:00Z"
             articles.add(a)
         }
         return articles
     }
 
     private val useDummyData = false
-    fun getDummyData() : MutableLiveData<List<Article>>
-    {
+    fun getDummyData(): MutableLiveData<List<Article>> {
         var headlines = MutableLiveData<List<Article>>()
         headlines.value = getPureDummyData()
         return headlines
     }
 
+    fun findHeadlinesFromNetwork(query: String) : LiveData<List<Article>>
+    {
+        val client = client
+        var call = client.findHeadlines(query)
+        val data = MutableLiveData<List<Article>>()
+        call.enqueue(object : retrofit2.Callback<NetworkHeadlinesResult> {
+            override fun onResponse(call: Call<NetworkHeadlinesResult>, response: retrofit2.Response<NetworkHeadlinesResult>){
+                val body = response.body()
+                if (body != null) {
+                    data.value = body.articles
+                }
+            }
+
+            override fun onFailure(call: Call<NetworkHeadlinesResult>, t: Throwable) {
+                println(t.message)
+            }
+        })
+        return data
+    }
 
     private fun getHeadlinesFromNetwork(country: NewsAPI.Countries, category: NewsAPI.Categories) : LiveData<List<Article>>
     {
         val client = client
         var call = client.getTopHeadlines(country.code,category.apiName)
         val data = MutableLiveData<List<Article>>()
-        call.enqueue(object : retrofit2.Callback<NetworkTopHeadlinesResult> {
-            override fun onResponse(call: Call<NetworkTopHeadlinesResult>, response: retrofit2.Response<NetworkTopHeadlinesResult>){
+        call.enqueue(object : retrofit2.Callback<NetworkHeadlinesResult> {
+            override fun onResponse(call: Call<NetworkHeadlinesResult>, response: retrofit2.Response<NetworkHeadlinesResult>){
                 val body = response.body()
                 if (body != null) {
                     body.articles?.forEach { article ->
@@ -118,7 +135,7 @@ internal object HeadlinesRepository {
                 }
             }
 
-            override fun onFailure(call: Call<NetworkTopHeadlinesResult>, t: Throwable) {
+            override fun onFailure(call: Call<NetworkHeadlinesResult>, t: Throwable) {
                 println(t.message)
             }
         })
