@@ -1,5 +1,9 @@
 package com.example.newsapp.ui.SearchFragment
 
+import android.R.string
+import android.app.DatePickerDialog
+import android.app.DatePickerDialog.OnDateSetListener
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -13,6 +17,11 @@ import com.example.newsapp.NewsAdapter
 import com.example.newsapp.R
 import com.example.newsapp.network.NewsAPI
 import com.example.newsapp.repository.HeadlinesRepository
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class SearchFragment : Fragment() {
@@ -27,6 +36,8 @@ class SearchFragment : Fragment() {
     private lateinit var searchOptions : LinearLayout
     private lateinit var sortByRadioGroup : RadioGroup
     private lateinit var languageSelectSpinner : Spinner
+    private lateinit var fromDate : EditText
+    private lateinit var toDate : EditText
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -40,6 +51,8 @@ class SearchFragment : Fragment() {
         list = root.findViewById(R.id.search_recyclerView)
         searchOptions = root.findViewById(R.id.searchOptions_layout)
         sortByRadioGroup = root.findViewById(R.id.sortBy_radioGroup)
+        fromDate = root.findViewById(R.id.fromDate)
+        toDate = root.findViewById(R.id.toDate)
 
         var items = NewsAPI.FilterLanguage.values().map { return@map it.name }
 
@@ -52,6 +65,52 @@ class SearchFragment : Fragment() {
         if(defaultLanguageIndex != -1)
             languageSelectSpinner.setSelection(defaultLanguageIndex)
 
+        var onDateClickListener = { it:View ->
+            val editText = it as EditText
+            val cldr: Calendar = Calendar.getInstance()
+            val day: Int = cldr.get(Calendar.DAY_OF_MONTH)
+            val month: Int = cldr.get(Calendar.MONTH)
+            val year: Int = cldr.get(Calendar.YEAR)
+            // date picker dialog
+            var picker = DatePickerDialog(
+                requireContext(),
+                OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                    editText.setText(
+                        year.toString() + "-" + (monthOfYear + 1) + "-" + dayOfMonth
+                    )
+
+                    var fromDateStr = fromDate.editableText.toString()
+                    var toDateStr = toDate.editableText.toString()
+
+                    if (!fromDateStr.isBlank() && !toDateStr.isBlank()) {
+                        val formatter: DateTimeFormatter =
+                            DateTimeFormat.forPattern("yyyy-MM-dd")
+                        val dt: DateTime = formatter.parseDateTime(fromDateStr)
+                        val dt2 = formatter.parseDateTime(toDateStr)
+                        if (dt.isAfter(dt2)) {
+                            var tmp = fromDateStr
+                            fromDateStr = toDateStr
+                            toDateStr = tmp
+                            fromDate.setText(fromDateStr)
+                            toDate.setText(toDateStr)
+
+                        }
+                    }
+
+                }, year, month, day
+            )
+            picker.setButton(
+                DialogInterface.BUTTON_NEGATIVE, "Cancel",
+                DialogInterface.OnClickListener { dialog, which ->
+                    if (which == DialogInterface.BUTTON_NEGATIVE) {
+                        editText.setText("")
+                    }
+                })
+            picker.show()
+        }
+
+        fromDate.setOnClickListener(onDateClickListener)
+        toDate.setOnClickListener(onDateClickListener)
         return root
     }
 
@@ -74,7 +133,10 @@ class SearchFragment : Fragment() {
                  if(language == null)
                      language = NewsAPI.FilterLanguage.English
 
-                var data= HeadlinesRepository.findHeadlinesFromNetwork(query, sortBy, language)
+                 var fromDateStr = fromDate.editableText.toString()
+                 var toDateStr = toDate.editableText.toString()
+
+                var data= HeadlinesRepository.findHeadlinesFromNetwork(query, sortBy, language, fromDateStr, toDateStr)
                 data.observe(viewLifecycleOwner) {
                     searchView.isIconified = false;
                     mAdapter = NewsAdapter(it)

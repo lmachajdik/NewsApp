@@ -15,7 +15,9 @@ interface GetDataService {
     fun findHeadlines(
         @Query(value = "q", encoded = true) query: String,
         @Query(value = "sortBy", encoded = true) sortBy: String,
-        @Query(value = "language", encoded = true) languageCode: String
+        @Query(value = "language", encoded = true) languageCode: String,
+        @Query(value = "from", encoded = true) dateFrom: String,
+    @Query(value = "to", encoded = true) dateTo: String
     )
             : Call<NetworkHeadlinesResult>
 }
