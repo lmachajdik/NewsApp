@@ -72,4 +72,11 @@ object NewsAPI {
         Technology("technology"),
         Mixed("");
     }
+
+    enum class SortBy(val apiName:String) {
+        Latest("publishedAt"),
+        Relevancy("relevancy"),
+        Popularity("popularity")
+
+    }
 }

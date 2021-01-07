@@ -4,6 +4,8 @@ package com.example.newsapp
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
+import android.view.View.OnClickListener
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -33,22 +35,6 @@ class MainActivity : AppCompatActivity() {
         JodaTimeAndroid.init(this)
         NewsDB.init(this)
         setSupportActionBar(toolbar)
-
-        GlobalScope.launch {
-/*
-            var b = HeadlineSource("pravda.sk","pravda")
-            var c = Article(b,"","qqqqqqqqqqq","ddddddddddddddd","cccccccccc","","","","")
-            var r = Array<Article>(1) {
-                c
-            }
-
-            NewsDB.insertArticles(r.toList())
-            //NewsDB.insertSource(b)
-            var q = NewsDB.getSourceById("pravda.sk")
-
-            var a=NewsDB.getArticles()
-            println()*/
-        }
 
         toolbar.setOnMenuItemClickListener { it: MenuItem? ->
             if(it?.itemId == R.id.newsCountry_settings)

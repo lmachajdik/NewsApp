@@ -91,10 +91,10 @@ internal object HeadlinesRepository {
         return headlines
     }
 
-    fun findHeadlinesFromNetwork(query: String) : LiveData<List<Article>>
+    fun findHeadlinesFromNetwork(query: String, sortBy : String) : LiveData<List<Article>>
     {
         val client = client
-        var call = client.findHeadlines(query)
+        var call = client.findHeadlines(query, sortBy)
         val data = MutableLiveData<List<Article>>()
         call.enqueue(object : retrofit2.Callback<NetworkHeadlinesResult> {
             override fun onResponse(call: Call<NetworkHeadlinesResult>, response: retrofit2.Response<NetworkHeadlinesResult>){

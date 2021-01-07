@@ -11,6 +11,10 @@ interface GetDataService {
         @Query(value = "category", encoded = true) category: String?
     ): Call<NetworkHeadlinesResult>
 
-    @GET("everything/")
-    fun findHeadlines( @Query(value = "q", encoded = true) query: String) : Call<NetworkHeadlinesResult>
+    @GET("everything")
+    fun findHeadlines(
+        @Query(value = "q", encoded = true) query: String,
+        @Query(value = "sortBy", encoded = true) sortBy: String
+    )
+            : Call<NetworkHeadlinesResult>
 }
