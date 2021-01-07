@@ -4,10 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import android.widget.LinearLayout
-import android.widget.RadioGroup
-import android.widget.SearchView
-import androidx.core.view.MenuItemCompat
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
@@ -29,6 +26,8 @@ class SearchFragment : Fragment() {
     private lateinit var list: RecyclerView
     private lateinit var searchOptions : LinearLayout
     private lateinit var sortByRadioGroup : RadioGroup
+    private lateinit var languageSelectSpinner : Spinner
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -41,6 +40,18 @@ class SearchFragment : Fragment() {
         list = root.findViewById(R.id.search_recyclerView)
         searchOptions = root.findViewById(R.id.searchOptions_layout)
         sortByRadioGroup = root.findViewById(R.id.sortBy_radioGroup)
+
+        var items = NewsAPI.FilterLanguage.values().map { return@map it.name }
+
+        languageSelectSpinner = root.findViewById(R.id.spinner) as Spinner
+        var adapter : ArrayAdapter<String> =
+            ArrayAdapter(requireContext(),android.R.layout.simple_spinner_dropdown_item, items)
+        languageSelectSpinner.adapter = adapter
+
+        var defaultLanguageIndex= items.indexOf("English")
+        if(defaultLanguageIndex != -1)
+            languageSelectSpinner.setSelection(defaultLanguageIndex)
+
         return root
     }
 
@@ -57,8 +68,13 @@ class SearchFragment : Fragment() {
                  val radioButton: View = sortByRadioGroup.findViewById(sortByRadioGroup.checkedRadioButtonId)
                  val idx: Int = sortByRadioGroup.indexOfChild(radioButton)
                  var sortBy = NewsAPI.SortBy.values()[idx].apiName
+                 var language = NewsAPI.FilterLanguage.values().find {
+                     it.name == languageSelectSpinner.selectedItem
+                 }
+                 if(language == null)
+                     language = NewsAPI.FilterLanguage.English
 
-                var data= HeadlinesRepository.findHeadlinesFromNetwork(query, sortBy)
+                var data= HeadlinesRepository.findHeadlinesFromNetwork(query, sortBy, language)
                 data.observe(viewLifecycleOwner) {
                     searchView.isIconified = false;
                     mAdapter = NewsAdapter(it)

@@ -77,6 +77,20 @@ object NewsAPI {
         Latest("publishedAt"),
         Relevancy("relevancy"),
         Popularity("popularity")
+    }
 
+    enum class FilterLanguage(val code:String) {
+        Arabic("ar"),
+        Chinese("zh"),
+        Dutch("nl"),
+        German("de"),
+        English("en"),
+        France("fr"),
+        Hebrew("he"),
+        Italian("it"),
+        Norwegian("no"),
+        Portuguese("pt"),
+        Russian("ru"),
+        Spanish("es"),
     }
 }
