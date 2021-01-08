@@ -1,6 +1,7 @@
 package com.example.newsapp.ui.TopHeadlinesFragments
 
 import android.os.Bundle
+import androidx.navigation.fragment.findNavController
 import com.example.newsapp.network.NewsAPI
 
 class MixedNewsFragment : NewsFragment() {

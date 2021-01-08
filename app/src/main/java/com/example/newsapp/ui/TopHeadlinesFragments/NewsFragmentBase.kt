@@ -106,9 +106,6 @@ abstract class NewsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         val view = inflater.inflate(R.layout.fragment_news_list, container, false)
         setHasOptionsMenu(true)
         list = view.findViewById(R.id.list)
-        val itemDecoration: ItemDecoration =
-            DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
-        list.addItemDecoration(itemDecoration)
 
         currentInstance = this
 

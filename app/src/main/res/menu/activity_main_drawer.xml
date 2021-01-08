@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
+    <item
+        android:id="@+id/nav_search"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="@string/menu_search" />
 
         <item
             android:title="Top Headlines"
@@ -47,25 +51,6 @@
                 android:id="@+id/nav_news_technology"
                 android:icon="@drawable/ic_baseline_memory_24"
                 android:title="Technology" />
-
-        <item
-            android:title="Others"
-            android:enabled="false"
-            android:checkable="false"/>
-
-            <item
-                android:id="@+id/nav_search"
-                android:icon="@drawable/ic_baseline_search_24"
-                android:title="@string/menu_search" />
-            <item
-                android:id="@+id/nav_gallery"
-                android:icon="@drawable/ic_menu_gallery"
-                android:title="@string/menu_gallery" />
-
-            <item
-                android:id="@+id/nav_slideshow"
-                android:icon="@drawable/ic_menu_slideshow"
-                android:title="@string/menu_slideshow" />
 
 
 
