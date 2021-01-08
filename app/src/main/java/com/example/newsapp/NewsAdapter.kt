@@ -105,9 +105,4 @@ class NewsAdapter (private val mArticles: List<Article>) : RecyclerView.Adapter<
     {
         return this.mArticles
     }
-
-    fun getItem(position: Int) : Article
-    {
-        return mArticles[position]
-    }
 }

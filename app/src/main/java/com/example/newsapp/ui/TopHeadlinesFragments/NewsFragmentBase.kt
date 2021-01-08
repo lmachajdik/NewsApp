@@ -11,10 +11,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
-import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.recyclerview.widget.SnapHelper
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.newsapp.NewsAdapter
@@ -28,6 +27,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
 
 /**
  * A fragment representing a list of Items.
@@ -106,7 +106,6 @@ abstract class NewsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         val view = inflater.inflate(R.layout.fragment_news_list, container, false)
         setHasOptionsMenu(true)
         list = view.findViewById(R.id.list)
-
         currentInstance = this
 
         val snapHelper: SnapHelper = LinearSnapHelper()

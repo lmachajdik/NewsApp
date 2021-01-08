@@ -4,53 +4,58 @@
     tools:showIn="navigation_view">
 
     <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_baseline_home_24"
+        android:title="@string/fragment_title_home" />
+
+    <item
         android:id="@+id/nav_search"
         android:icon="@drawable/ic_baseline_search_24"
-        android:title="@string/menu_search" />
+        android:title="@string/fragment_title_search" />
 
         <item
-            android:title="Top Headlines"
+            android:title="@string/category_title_topHeadlines"
             android:enabled="false"
             android:checkable="false"/>
             <item
                 android:id="@+id/nav_news_business"
                 android:icon="@drawable/ic_baseline_business_center_24"
-                android:title="Business"/>
+                android:title="@string/fragment_title_business"/>
 
             <item
                 android:id="@+id/nav_news_entertainment"
                 android:icon="@drawable/ic_baseline_sports_esports_24"
-                android:title="Entertainment" />
+                android:title="@string/fragment_title_entertainment" />
 
             <item
                 android:id="@+id/nav_news_general"
                 android:icon="@drawable/ic_baseline_forum_24"
-                android:title="General" />
+                android:title="@string/fragment_title_general" />
 
             <item
                 android:id="@+id/nav_news_health"
                 android:icon="@drawable/ic_baseline_local_hospital_24"
-                android:title="Health" />
+                android:title="@string/fragment_title_health" />
 
             <item
                 android:id="@+id/nav_news_mixed"
                 android:icon="@drawable/ic_baseline_dynamic_feed_24"
-                android:title="Mixed" />
+                android:title="@string/fragment_title_mixed" />
 
             <item
                 android:id="@+id/nav_news_science"
                 android:icon="@drawable/ic_baseline_insert_chart_outlined_24"
-                android:title="Science" />
+                android:title="@string/fragment_title_science" />
 
             <item
                 android:id="@+id/nav_news_sports"
                 android:icon="@drawable/ic_baseline_sports_24"
-                android:title="Sports" />
+                android:title="@string/fragment_title_sports" />
 
             <item
                 android:id="@+id/nav_news_technology"
                 android:icon="@drawable/ic_baseline_memory_24"
-                android:title="Technology" />
+                android:title="@string/fragment_title_technology" />
 
 
 

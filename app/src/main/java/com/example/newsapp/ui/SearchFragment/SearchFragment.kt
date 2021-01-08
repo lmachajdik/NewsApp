@@ -1,6 +1,5 @@
 package com.example.newsapp.ui.SearchFragment
 
-import android.R.string
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.content.DialogInterface
@@ -10,11 +9,14 @@ import android.os.Bundle
 import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapp.NewsAdapter
 import com.example.newsapp.R
+import com.example.newsapp.domain.SharedViewModel
 import com.example.newsapp.network.NewsAPI
 import com.example.newsapp.repository.HeadlinesRepository
 import org.joda.time.DateTime
@@ -28,8 +30,7 @@ class SearchFragment : Fragment() {
 
 
 
-    private lateinit var homeViewModel: HomeViewModel
-
+    private lateinit var searchViewModel: SearchViewModel
     private var mAdapter = NewsAdapter(ArrayList())
 
     private lateinit var list: RecyclerView
@@ -39,87 +40,33 @@ class SearchFragment : Fragment() {
     private lateinit var fromDate : EditText
     private lateinit var toDate : EditText
 
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
+    var menu: MutableLiveData<Menu> = MutableLiveData()
 
-        homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
-        setHasOptionsMenu(true)
-        val root = inflater.inflate(R.layout.fragment_search, container, false)
-        list = root.findViewById(R.id.search_recyclerView)
-        searchOptions = root.findViewById(R.id.searchOptions_layout)
-        sortByRadioGroup = root.findViewById(R.id.sortBy_radioGroup)
-        fromDate = root.findViewById(R.id.fromDate)
-        toDate = root.findViewById(R.id.toDate)
-
-        var items = NewsAPI.FilterLanguage.values().map { return@map it.name }
-
-        languageSelectSpinner = root.findViewById(R.id.spinner) as Spinner
-        var adapter : ArrayAdapter<String> =
-            ArrayAdapter(requireContext(),android.R.layout.simple_spinner_dropdown_item, items)
-        languageSelectSpinner.adapter = adapter
-
-        var defaultLanguageIndex= items.indexOf("English")
-        if(defaultLanguageIndex != -1)
-            languageSelectSpinner.setSelection(defaultLanguageIndex)
-
-        var onDateClickListener = { it:View ->
-            val editText = it as EditText
-            val cldr: Calendar = Calendar.getInstance()
-            val day: Int = cldr.get(Calendar.DAY_OF_MONTH)
-            val month: Int = cldr.get(Calendar.MONTH)
-            val year: Int = cldr.get(Calendar.YEAR)
-            // date picker dialog
-            var picker = DatePickerDialog(
-                requireContext(),
-                OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-                    editText.setText(
-                        year.toString() + "-" + (monthOfYear + 1) + "-" + dayOfMonth
-                    )
-
-                    var fromDateStr = fromDate.editableText.toString()
-                    var toDateStr = toDate.editableText.toString()
-
-                    if (!fromDateStr.isBlank() && !toDateStr.isBlank()) {
-                        val formatter: DateTimeFormatter =
-                            DateTimeFormat.forPattern("yyyy-MM-dd")
-                        val dt: DateTime = formatter.parseDateTime(fromDateStr)
-                        val dt2 = formatter.parseDateTime(toDateStr)
-                        if (dt.isAfter(dt2)) {
-                            var tmp = fromDateStr
-                            fromDateStr = toDateStr
-                            toDateStr = tmp
-                            fromDate.setText(fromDateStr)
-                            toDate.setText(toDateStr)
-
-                        }
-                    }
-
-                }, year, month, day
-            )
-            picker.setButton(
-                DialogInterface.BUTTON_NEGATIVE, "Cancel",
-                DialogInterface.OnClickListener { dialog, which ->
-                    if (which == DialogInterface.BUTTON_NEGATIVE) {
-                        editText.setText("")
-                    }
-                })
-            picker.show()
-        }
-
-        fromDate.setOnClickListener(onDateClickListener)
-        toDate.setOnClickListener(onDateClickListener)
-        return root
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        searchViewModel = ViewModelProvider(requireActivity()).get(SearchViewModel::class.java)
     }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        if(searchViewModel.query.value != "")
+        {
+            val searchItem = menu?.findItem(R.id.search)
+            searchView = searchItem?.actionView as SearchView
+            searchItem.expandActionView()
+            searchView.setQuery(searchViewModel.query.value, true)
+        }
+    }
+
 
     lateinit var searchView: SearchView
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.search_menu, menu)
         val searchItem = menu?.findItem(R.id.search)
         searchView = searchItem?.actionView as SearchView
-        searchView.isIconifiedByDefault = false
+        searchView.isIconified = false
+
+        //searchView.setQuery(searchViewModel.text.toString(),true)
         val onClick = { query : String ->
              if(query.count() != 0) {
                  searchOptions.visibility = View.GONE
@@ -191,4 +138,80 @@ class SearchFragment : Fragment() {
                 onClick(query)
         }
     }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+
+        setHasOptionsMenu(true)
+
+        val root = inflater.inflate(R.layout.fragment_search, container, false)
+        list = root.findViewById(R.id.search_recyclerView)
+        searchOptions = root.findViewById(R.id.searchOptions_layout)
+        sortByRadioGroup = root.findViewById(R.id.sortBy_radioGroup)
+        fromDate = root.findViewById(R.id.fromDate)
+        toDate = root.findViewById(R.id.toDate)
+
+        var items = NewsAPI.FilterLanguage.values().map { return@map it.name }
+
+        languageSelectSpinner = root.findViewById(R.id.spinner) as Spinner
+        var adapter : ArrayAdapter<String> =
+            ArrayAdapter(requireContext(),android.R.layout.simple_spinner_dropdown_item, items)
+        languageSelectSpinner.adapter = adapter
+
+        var defaultLanguageIndex= items.indexOf("English")
+        if(defaultLanguageIndex != -1)
+            languageSelectSpinner.setSelection(defaultLanguageIndex)
+
+        var onDateClickListener = { it:View ->
+            val editText = it as EditText
+            val cldr: Calendar = Calendar.getInstance()
+            val day: Int = cldr.get(Calendar.DAY_OF_MONTH)
+            val month: Int = cldr.get(Calendar.MONTH)
+            val year: Int = cldr.get(Calendar.YEAR)
+            // date picker dialog
+            var picker = DatePickerDialog(
+                requireContext(),
+                OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                    editText.setText(
+                        year.toString() + "-" + (monthOfYear + 1) + "-" + dayOfMonth
+                    )
+
+                    var fromDateStr = fromDate.editableText.toString()
+                    var toDateStr = toDate.editableText.toString()
+
+                    if (!fromDateStr.isBlank() && !toDateStr.isBlank()) {
+                        val formatter: DateTimeFormatter =
+                            DateTimeFormat.forPattern("yyyy-MM-dd")
+                        val dt: DateTime = formatter.parseDateTime(fromDateStr)
+                        val dt2 = formatter.parseDateTime(toDateStr)
+                        if (dt.isAfter(dt2)) {
+                            var tmp = fromDateStr
+                            fromDateStr = toDateStr
+                            toDateStr = tmp
+                            fromDate.setText(fromDateStr)
+                            toDate.setText(toDateStr)
+
+                        }
+                    }
+
+                }, year, month, day
+            )
+            picker.setButton(
+                DialogInterface.BUTTON_NEGATIVE, "Cancel",
+                DialogInterface.OnClickListener { dialog, which ->
+                    if (which == DialogInterface.BUTTON_NEGATIVE) {
+                        editText.setText("")
+                    }
+                })
+            picker.show()
+        }
+
+        fromDate.setOnClickListener(onDateClickListener)
+        toDate.setOnClickListener(onDateClickListener)
+        return root
+    }
+
 }
