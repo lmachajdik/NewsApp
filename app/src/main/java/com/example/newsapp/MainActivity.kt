@@ -4,8 +4,6 @@ package com.example.newsapp
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
-import android.view.View.OnClickListener
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -19,8 +17,6 @@ import com.example.newsapp.database.NewsDB
 import com.example.newsapp.network.NewsAPI
 import com.example.newsapp.ui.TopHeadlinesFragments.NewsFragment
 import com.google.android.material.navigation.NavigationView
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import net.danlew.android.joda.JodaTimeAndroid
 
 class MainActivity : AppCompatActivity() {
@@ -43,22 +39,21 @@ class MainActivity : AppCompatActivity() {
                     AlertDialog.Builder(it)
                 }
 
-                if (builder != null) {
-                    var arr = NewsAPI.Countries.values()
-                    val items =arrayOfNulls<String>(arr.count())
-                    var i = 0
-                    arr.forEach {
-                        items[i] = arr[i++].name.replace('_',' ')
-                    }
-                    builder
-                        .setTitle("Select Country")
-                        .setItems(items, DialogInterface.OnClickListener { dialogInterface, i ->
-                            NewsAPI.NewsCountry = NewsAPI.Countries.valueOf(arr[i].name)
-                            NewsFragment.currentInstance?.updateDataFromRepository() //fetch data from repository for currently selected country
-                        })
+                val arr = NewsAPI.Countries.values()
+                val items =arrayOfNulls<String>(arr.count())
 
-                    builder.create().show()
+                var i = 0
+                arr.forEach { it ->
+                    items[i++] = it.name.replace('_',' ')
                 }
+                builder
+                    .setTitle("Select Country")
+                    .setItems(items, DialogInterface.OnClickListener { _, pos ->
+                        NewsAPI.NewsCountry = NewsAPI.Countries.valueOf(arr[pos].name)
+                        NewsFragment.currentInstance?.updateDataFromRepository() //fetch data from repository for currently selected country
+                    })
+
+                builder.create().show()
             }
             return@setOnMenuItemClickListener true
         }

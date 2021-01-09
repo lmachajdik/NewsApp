@@ -8,7 +8,8 @@
     app:cardBackgroundColor="@color/cardview_light_background"
     app:cardCornerRadius="4dp"
     app:cardElevation="2dp"
-    app:cardUseCompatPadding="true">
+    app:cardUseCompatPadding="true"
+    tools:ignore="PrivateResource">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -31,6 +32,7 @@
             android:layout_gravity="top|center"
             android:textSize="20sp"
             android:text="text"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            tools:ignore="HardcodedText" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

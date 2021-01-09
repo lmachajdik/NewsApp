@@ -13,8 +13,7 @@ data class HeadlineSource(
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString().toString()
-    ) {
-    }
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(id)

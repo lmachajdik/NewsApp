@@ -22,4 +22,19 @@
     <string name="fragment_title_science">Science</string>
     <string name="fragment_title_sports">Sports</string>
     <string name="fragment_title_technology">Technology</string>
+    <string name="home_text_quick_search">Quick search</string>
+    <string name="home_text_jump_to">Jump to</string>
+    <string name="search_text_sort_by">Sort by</string>
+    <string name="search_relevancy">Relevancy</string>
+    <string name="search_latest">Latest</string>
+    <string name="search_popularity">Popularity</string>
+    <string name="search_language">Language</string>
+    <string name="search_date">Date</string>
+    <string name="search_from">From</string>
+    <string name="search_to">To</string>
+    <string name="menu_select_country">Select Country</string>
+    <string name="menu_search">Search</string>
+    <string name="home_search_hint">Type something here..</string>
+    <string name="search_hint_start_date">Start date</string>
+    <string name="search_hint_end_date">End date</string>
 </resources>

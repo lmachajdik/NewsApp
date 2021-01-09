@@ -9,7 +9,7 @@
     app:cardCornerRadius="10dp"
     app:cardElevation="5dp"
     app:cardUseCompatPadding="true"
-    >
+    tools:ignore="PrivateResource">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,10 +23,11 @@
             android:layout_height="match_parent"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:text="title"
+            android:text="Title"
             android:textAlignment="center"
             android:textSize="18sp"
-            android:gravity="center_horizontal" />
+            android:gravity="center_horizontal"
+            tools:ignore="HardcodedText" />
 
         <ImageView
             android:id="@+id/imageView"
@@ -34,7 +35,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:layout_weight="1"
-            tools:srcCompat="@tools:sample/avatars" />
+            tools:srcCompat="@tools:sample/avatars"
+            tools:ignore="ContentDescription" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,19 +46,22 @@
                 android:id="@+id/source"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="source"
+                android:text="Source"
                 android:textSize="12sp"
                 android:layout_marginLeft="5dp"
-                />
+                tools:ignore="HardcodedText"
+                android:layout_marginStart="5dp" />
             <TextView
                 android:id="@+id/datetime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="datetime"
+                android:text="Datetime"
                 android:textSize="12sp"
                 android:textAlignment="textEnd"
                 android:layout_marginRight="5dp"
-                android:gravity="end" />
+                android:gravity="end"
+                tools:ignore="HardcodedText"
+                android:layout_marginEnd="5dp" />
 
 
         </LinearLayout>
@@ -71,7 +76,8 @@
             android:layout_marginEnd="4dp"
             android:layout_marginRight="4dp"
             android:layout_weight="1"
-            android:text="description" />
+            android:text="Description"
+            tools:ignore="HardcodedText" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

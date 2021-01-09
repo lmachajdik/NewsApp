@@ -10,8 +10,6 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -25,26 +23,21 @@ class HomeFragment : Fragment(), HomeItemAdapter.OnItemClickListener{
     private lateinit var adapter: HomeItemAdapter
 
     private lateinit var searchViewModel: SearchViewModel
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        var view = inflater.inflate(R.layout.fragment_home, container, false)
+        val view = inflater.inflate(R.layout.fragment_home, container, false)
         searchViewModel = ViewModelProvider(requireActivity()).get(SearchViewModel::class.java)
-        var logo: ImageView = view.findViewById(R.id.home_logo)
+        val logo: ImageView = view.findViewById(R.id.home_logo)
         logo.setOnClickListener{
             Toast.makeText(context, "Author: Lukáš Machajdík", Toast.LENGTH_LONG).show()
         }
 
-        var search : ImageView = view.findViewById(R.id.home_search)
-        search.setOnClickListener {
-            var q = it
-            var searchEditText = view.findViewById<EditText>(R.id.home_search_editText)
+        val search : ImageView = view.findViewById(R.id.home_search)
+        search.setOnClickListener { val searchEditText = view.findViewById<EditText>(R.id.home_search_editText)
             searchViewModel.setQuery(searchEditText.editableText.toString())
 
             val navController = findNavController()
@@ -53,13 +46,13 @@ class HomeFragment : Fragment(), HomeItemAdapter.OnItemClickListener{
 
         recyclerView = view.findViewById(R.id.home_list)
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
-        recyclerView.isNestedScrollingEnabled = false;
+        recyclerView.isNestedScrollingEnabled = false
         val orientation = resources.configuration.orientation
 
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             logo.visibility = View.GONE
-            var cLayout : ConstraintLayout = view.findViewById(R.id.constraintLayout)
-            val layoutParams: ConstraintLayout.LayoutParams = cLayout.getLayoutParams() as ConstraintLayout.LayoutParams
+            val cLayout : ConstraintLayout = view.findViewById(R.id.constraintLayout)
+            val layoutParams: ConstraintLayout.LayoutParams = cLayout.layoutParams as ConstraintLayout.LayoutParams
             layoutParams.leftToLeft = view.id
             layoutParams.rightToRight = view.id
             layoutParams.topToTop = view.id

@@ -1,7 +1,8 @@
 package com.example.newsapp.database
 
-import androidx.annotation.NonNull
-import androidx.room.*
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.example.newsapp.domain.HeadlineSource
 
 @Entity(tableName = "article_sources")
@@ -42,9 +43,6 @@ data class TopArticlesEntity(
                 category: String?) : this(0,
         //source?.id,
         source,author,title,description,content,publishedAt,url,urlToImage,category)
-    {
-
-    }
 
     constructor() : this(article_id=0)
 

@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
@@ -54,11 +53,11 @@ abstract class NewsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     fun updateDataFromRepository()
     {
         val job = GlobalScope.launch {
-            var a =HeadlinesRepository.getTopHeadlines(NewsAPI.NewsCountry,newsCategory)
+            val a =HeadlinesRepository.getTopHeadlines(NewsAPI.NewsCountry,newsCategory)
 
             withContext(Dispatchers.Main) {
                 a.observe(viewLifecycleOwner) {
-                var arr = model.topHeadlines.get(newsCategory.name)?.value
+                val arr = model.topHeadlines.get(newsCategory.name)?.value
                 if (arr != it)
                     model.topHeadlines.get(newsCategory.name)?.value = it
 
@@ -117,7 +116,7 @@ abstract class NewsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         model = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
         if(!model.topHeadlines.containsKey(newsCategory.name)) { //model doesnt contain this fragment's category, initialize it empty
-            var mld = MutableLiveData<List<Article>>()
+            val mld = MutableLiveData<List<Article>>()
             model.topHeadlines.put(newsCategory.name, mld)
             //model.topHeadlines.get(newsCategory.name)?.value = ArrayList()
         }
@@ -127,8 +126,8 @@ abstract class NewsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             mAdapter.setOnItemClickListener(object:
                 NewsAdapter.OnItemClickListener {
                 override fun onItemClick(itemView: View?, position: Int) {
-                    var items = mAdapter.getItems()
-                    var url = items[position].url
+                    val items = mAdapter.getItems()
+                    val url = items[position].url
                     if(url != null && url.isNotEmpty()) {
                         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                         startActivity(browserIntent)

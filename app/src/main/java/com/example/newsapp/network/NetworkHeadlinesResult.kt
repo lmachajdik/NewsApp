@@ -7,7 +7,7 @@ data class NetworkHeadlinesResult(
     @Json(name="status")
     var status: String?=null,
     @Json(name="totalResults")
-    var totalResults: Integer? = null,
+    var totalResults: Int? = null,
     @Json(name="articles")
     var articles: ArrayList<Article>? = null
 )

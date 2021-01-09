@@ -47,7 +47,7 @@ object DatabaseEntityConverter {
     fun EntityToSource(entity: HeadlineSourceEntity?) : HeadlineSource?{
         if (entity != null) {
             return HeadlineSource(
-                entity?.source_id,
+                entity.source_id,
                 entity.name
             )
         }

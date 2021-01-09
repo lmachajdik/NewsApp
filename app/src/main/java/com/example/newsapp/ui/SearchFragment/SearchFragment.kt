@@ -57,7 +57,7 @@ class SearchFragment : Fragment() {
     lateinit var searchView: SearchView
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.search_menu, menu)
-        val searchItem = menu?.findItem(R.id.search)
+        val searchItem = menu.findItem(R.id.search)
         searchView = searchItem?.actionView as SearchView
         searchView.isIconified = false
 
@@ -67,25 +67,25 @@ class SearchFragment : Fragment() {
 
                  val radioButton: View = sortByRadioGroup.findViewById(sortByRadioGroup.checkedRadioButtonId)
                  val idx: Int = sortByRadioGroup.indexOfChild(radioButton)
-                 var sortBy = NewsAPI.SortBy.values()[idx].apiName
+                 val sortBy = NewsAPI.SortBy.values()[idx].apiName
                  var language = NewsAPI.Languages.values().find {
                      it.name == languageSelectSpinner.selectedItem
                  }
                  if(language == null)
                      language = NewsAPI.Languages.English
 
-                 var fromDateStr = fromDate.editableText.toString()
-                 var toDateStr = toDate.editableText.toString()
+                 val fromDateStr = fromDate.editableText.toString()
+                 val toDateStr = toDate.editableText.toString()
 
-                var data= HeadlinesRepository.findHeadlinesFromNetwork(query, sortBy, language, fromDateStr, toDateStr)
+                val data= HeadlinesRepository.findHeadlinesFromNetwork(query, sortBy, language, fromDateStr, toDateStr)
                 data.observe(viewLifecycleOwner) {
-                    searchView.isIconified = false;
+                    searchView.isIconified = false
                     mAdapter = NewsAdapter(it)
                     mAdapter.setOnItemClickListener(object :
                         NewsAdapter.OnItemClickListener {
                         override fun onItemClick(itemView: View?, position: Int) {
-                            var items = mAdapter.getItems()
-                            var url = items[position].url
+                            val items = mAdapter.getItems()
+                            val url = items[position].url
                             if (url != null && url.isNotEmpty()) {
                                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                                 startActivity(browserIntent)
@@ -128,7 +128,7 @@ class SearchFragment : Fragment() {
 
         searchView.setOnQueryTextListener(queryTextListener) //keyboard search key press
         searchView.setOnClickListener { //menu item search icon in toolbar
-            var query = searchView.query.toString();
+            val query = searchView.query.toString()
             if(query.count() != 0)
                 onClick(query)
         }
@@ -149,27 +149,27 @@ class SearchFragment : Fragment() {
         fromDate = root.findViewById(R.id.fromDate)
         toDate = root.findViewById(R.id.toDate)
 
-        var items = NewsAPI.Languages.values().map { return@map it.name }
+        val items = NewsAPI.Languages.values().map { return@map it.name }
 
         languageSelectSpinner = root.findViewById(R.id.spinner) as Spinner
-        var adapter : ArrayAdapter<String> =
+        val adapter : ArrayAdapter<String> =
             ArrayAdapter(requireContext(),android.R.layout.simple_spinner_dropdown_item, items)
         languageSelectSpinner.adapter = adapter
 
-        var defaultLanguageIndex= items.indexOf(NewsAPI.Languages.English.name)
+        val defaultLanguageIndex= items.indexOf(NewsAPI.Languages.English.name)
         if(defaultLanguageIndex != -1)
             languageSelectSpinner.setSelection(defaultLanguageIndex)
 
-        var onDateClickListener = { it:View ->
+        val onDateClickListener = { it:View ->
             val editText = it as EditText
             val cldr: Calendar = Calendar.getInstance()
             val day: Int = cldr.get(Calendar.DAY_OF_MONTH)
             val month: Int = cldr.get(Calendar.MONTH)
             val year: Int = cldr.get(Calendar.YEAR)
             // date picker dialog
-            var picker = DatePickerDialog(
+            val picker = DatePickerDialog(
                 requireContext(),
-                OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                     editText.setText(
                         year.toString() + "-" + (monthOfYear + 1) + "-" + dayOfMonth
                     )
@@ -183,7 +183,7 @@ class SearchFragment : Fragment() {
                         val dt: DateTime = formatter.parseDateTime(fromDateStr)
                         val dt2 = formatter.parseDateTime(toDateStr)
                         if (dt.isAfter(dt2)) {
-                            var tmp = fromDateStr
+                            val tmp = fromDateStr
                             fromDateStr = toDateStr
                             toDateStr = tmp
                             fromDate.setText(fromDateStr)
@@ -196,7 +196,7 @@ class SearchFragment : Fragment() {
             )
             picker.setButton(
                 DialogInterface.BUTTON_NEGATIVE, "Cancel",
-                DialogInterface.OnClickListener { dialog, which ->
+                DialogInterface.OnClickListener { _, which ->
                     if (which == DialogInterface.BUTTON_NEGATIVE) {
                         editText.setText("")
                     }

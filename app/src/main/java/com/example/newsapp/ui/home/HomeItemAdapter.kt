@@ -1,15 +1,12 @@
 package com.example.newsapp.ui.home
 
-import android.media.Image
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.newsapp.NewsAdapter
 import com.example.newsapp.R
-import com.example.newsapp.domain.Article
 
 data class HomeItem(val fragmentRes: Int, val imgRes: Int, val text: String)
 
@@ -19,10 +16,10 @@ class HomeItemAdapter (private val mItems: List<HomeItem>) : RecyclerView.Adapte
         fun onItemClick(itemView: View?, position: Int)
     }
 
-    private var listener: HomeItemAdapter.OnItemClickListener? = null
+    private var listener: OnItemClickListener? = null
 
     // Define the method that allows the parent activity or fragment to define the listener
-    fun setOnItemClickListener(listener: HomeItemAdapter.OnItemClickListener) {
+    fun setOnItemClickListener(listener: OnItemClickListener) {
         this.listener = listener
     }
 
@@ -34,7 +31,7 @@ class HomeItemAdapter (private val mItems: List<HomeItem>) : RecyclerView.Adapte
         val imageView: ImageView = itemView.findViewById(R.id.home_img)
 
         init {
-            itemView.setOnClickListener(this);
+            itemView.setOnClickListener(this)
         }
 
         override fun onClick(itemView: View?) {

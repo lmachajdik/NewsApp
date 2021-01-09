@@ -36,7 +36,7 @@ internal object HeadlinesRepository {
             .addInterceptor(NetworkApiInterceptor())
             .build()
 
-        var retrofit = Retrofit.Builder()
+        val retrofit = Retrofit.Builder()
             .baseUrl(baseURL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
@@ -59,14 +59,14 @@ internal object HeadlinesRepository {
             "https://www.gannett-cdn.com/presto/2020/12/27/USAT/ebfb5d0f-d98f-40ee-a919-a3b84dd66128-AP_Biden_1.jpg?crop=3689,2075,x0,y385&width=3200&height=1680&fit=bounds",
             "https://cdn.cnn.com/cnnnext/dam/assets/201227072434-01-pope-county-arkansas-murders-super-tease.jpg"
         )
-        var year = 2000;
+        var year = 2000
 
-        var articles = ArrayList<Article>()
+        val articles = ArrayList<Article>()
 
         for (u in imgsUrl) {
 
 
-            var a = Article(
+            val a = Article(
                 //    null,
                 HeadlineSource("", "Lifehacker.com"),
                 "Mike Winters on Two Cents, shared by Mike Winters to Lifehacker",
@@ -86,7 +86,7 @@ internal object HeadlinesRepository {
 
     private val useDummyData = false
     fun getDummyData(): MutableLiveData<List<Article>> {
-        var headlines = MutableLiveData<List<Article>>()
+        val headlines = MutableLiveData<List<Article>>()
         headlines.value = getPureDummyData()
         return headlines
     }
@@ -94,7 +94,7 @@ internal object HeadlinesRepository {
     fun findHeadlinesFromNetwork(query: String, sortBy : String, language: NewsAPI.Languages, fromDateStr: String, toDateStr: String) : LiveData<List<Article>>
     {
         val client = client
-        var call = client.findHeadlines(query, sortBy, language.code, fromDateStr, toDateStr)
+        val call = client.findHeadlines(query, sortBy, language.code, fromDateStr, toDateStr)
         val data = MutableLiveData<List<Article>>()
         call.enqueue(object : retrofit2.Callback<NetworkHeadlinesResult> {
             override fun onResponse(call: Call<NetworkHeadlinesResult>, response: retrofit2.Response<NetworkHeadlinesResult>){
@@ -114,7 +114,7 @@ internal object HeadlinesRepository {
     private fun getHeadlinesFromNetwork(country: NewsAPI.Countries, category: NewsAPI.Categories) : LiveData<List<Article>>
     {
         val client = client
-        var call = client.getTopHeadlines(country.code,category.apiName)
+        val call = client.getTopHeadlines(country.code,category.apiName)
         val data = MutableLiveData<List<Article>>()
         call.enqueue(object : retrofit2.Callback<NetworkHeadlinesResult> {
             override fun onResponse(call: Call<NetworkHeadlinesResult>, response: retrofit2.Response<NetworkHeadlinesResult>){
@@ -144,11 +144,11 @@ internal object HeadlinesRepository {
 
     private fun getDataOnFirstStart(country: NewsAPI.Countries, category: NewsAPI.Categories) : LiveData<List<Article>>
     {
-        var data : MutableLiveData<List<Article>> = MutableLiveData()
+        val data : MutableLiveData<List<Article>> = MutableLiveData()
 
         val fetchFromInternet = {
             GlobalScope.launch {
-                var a= getHeadlinesFromNetwork(country, category)
+                val a= getHeadlinesFromNetwork(country, category)
                 withContext(Dispatchers.Main) {
                     NewsFragment.currentInstance?.viewLifecycleOwner?.let {
                         a.observe(it){
@@ -160,8 +160,8 @@ internal object HeadlinesRepository {
             }
         }
 
-        GlobalScope.launch() {
-            var articles : List<Article>? = NewsDB.getArticles(category)
+        GlobalScope.launch {
+            val articles : List<Article>? = NewsDB.getArticles(category)
             if (articles != null && articles.count() != 0) {
                 withContext(Dispatchers.Main) {
                     data.value = articles
@@ -186,20 +186,20 @@ internal object HeadlinesRepository {
             return localModelHeadlines?.firstOrNull()?.datetime?.plusHours(UPDATE_TIME_HOURS)?.isBeforeNow!!
     }
 
-    private fun getHeadlinesFromLocalModel(country: NewsAPI.Countries, category: NewsAPI.Categories) : LiveData<List<Article>>
+    private fun getHeadlinesFromLocalModel(category: NewsAPI.Categories) : LiveData<List<Article>>
     {
         var data : MutableLiveData<List<Article>> = MutableLiveData()
-        var model = NewsFragment.currentInstance?.requireActivity()?.let { ViewModelProvider(it).get(SharedViewModel::class.java) }
+        val model = NewsFragment.currentInstance?.requireActivity()?.let { ViewModelProvider(it).get(SharedViewModel::class.java) }
 
         if(model?.topHeadlines != null)
-            data = model?.topHeadlines?.get(category.name)!!
+            data = model.topHeadlines.get(category.name)!!
 
         return data
     }
 
     fun getTopHeadlines(country: NewsAPI.Countries, category: NewsAPI.Categories) : LiveData<List<Article>>
     {
-        var data : LiveData<List<Article>>
+        val data : LiveData<List<Article>>
 
         if(useDummyData)
             return getDummyData()
@@ -215,13 +215,13 @@ internal object HeadlinesRepository {
         }
         else if(!countryChange)
         {
-            var localModelHeadlines = NewsFragment.currentInstance?.model?.topHeadlines?.get(category.name)?.value
-            if(localModelHeadlines != null && localModelHeadlines?.count()  != 0) //if local model is not empty
+            val localModelHeadlines = NewsFragment.currentInstance?.model?.topHeadlines?.get(category.name)?.value
+            if(localModelHeadlines != null && localModelHeadlines.count() != 0) //if local model is not empty
             {
                 if(isOutdated(localModelHeadlines)) //if at least UPDATE_TIME_HOURS hours passed since latest news
                     data = getHeadlinesFromNetwork(country,category)
                 else //local model news are up to date //TODO consider removing later, might be redundant
-                    data = getHeadlinesFromLocalModel(country,category)
+                    data = getHeadlinesFromLocalModel(category)
             }
             else //local model empty
             {

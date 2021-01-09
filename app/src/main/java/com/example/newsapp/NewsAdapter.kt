@@ -1,6 +1,5 @@
 package com.example.newsapp
 
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,10 +7,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.Target
 import com.example.newsapp.domain.Article
 import org.joda.time.format.DateTimeFormat
-import kotlin.math.roundToInt
 
 
 class NewsAdapter (private val mArticles: List<Article>) : RecyclerView.Adapter<NewsAdapter.ViewHolder>()
@@ -40,7 +37,7 @@ class NewsAdapter (private val mArticles: List<Article>) : RecyclerView.Adapter<
         val imageView: ImageView= itemView.findViewById(R.id.imageView)
 
         init {
-            itemView.setOnClickListener(this);
+            itemView.setOnClickListener(this)
         }
 
         override fun onClick(itemView: View?) {
@@ -70,7 +67,7 @@ class NewsAdapter (private val mArticles: List<Article>) : RecyclerView.Adapter<
         val article: Article = mArticles.get(position)
         // Set item views based on your views and data model
         val titleTextView = viewHolder.titleTextView
-        titleTextView.setText(article.title)
+        titleTextView.text = article.title
 
         val descriptionTextView = viewHolder.descriptionTextView
         descriptionTextView.text = article.description
@@ -79,7 +76,7 @@ class NewsAdapter (private val mArticles: List<Article>) : RecyclerView.Adapter<
         sourceTextView.text = article.source?.name
 
         val datetimeTextView = viewHolder.datetimeTextView
-        datetimeTextView.text = article.datetime?.toString(DateTimeFormat.shortDateTime());
+        datetimeTextView.text = article.datetime?.toString(DateTimeFormat.shortDateTime())
 
         val imageView = viewHolder.imageView
 
@@ -93,7 +90,7 @@ class NewsAdapter (private val mArticles: List<Article>) : RecyclerView.Adapter<
                 displayMetrics.heightPixels/2
             )
             .fitCenter()
-            .into(imageView);
+            .into(imageView)
     }
 
     // Returns the total count of items in the list

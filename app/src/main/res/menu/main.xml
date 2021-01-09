@@ -4,6 +4,6 @@
     <item
         android:id="@+id/newsCountry_settings"
         android:orderInCategory="100"
-        android:title="Select Country"
+        android:title="@string/menu_select_country"
         app:showAsAction="never" />
 </menu>
