@@ -79,7 +79,7 @@ object NewsAPI {
         Popularity("popularity")
     }
 
-    enum class FilterLanguage(val code:String) {
+    enum class Languages(val code:String) {
         Arabic("ar"),
         Chinese("zh"),
         Dutch("nl"),

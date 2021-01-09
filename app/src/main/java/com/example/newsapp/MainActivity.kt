@@ -79,8 +79,7 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_news_technology,
 
             R.id.nav_home,
-            R.id.nav_search,
-            R.id.nav_gallery, R.id.nav_slideshow), drawerLayout)
+            R.id.nav_search), drawerLayout)
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)

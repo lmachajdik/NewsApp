@@ -9,14 +9,11 @@ import android.os.Bundle
 import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapp.NewsAdapter
 import com.example.newsapp.R
-import com.example.newsapp.domain.SharedViewModel
 import com.example.newsapp.network.NewsAPI
 import com.example.newsapp.repository.HeadlinesRepository
 import org.joda.time.DateTime
@@ -27,9 +24,6 @@ import kotlin.collections.ArrayList
 
 
 class SearchFragment : Fragment() {
-
-
-
     private lateinit var searchViewModel: SearchViewModel
     private var mAdapter = NewsAdapter(ArrayList())
 
@@ -40,8 +34,6 @@ class SearchFragment : Fragment() {
     private lateinit var fromDate : EditText
     private lateinit var toDate : EditText
 
-    var menu: MutableLiveData<Menu> = MutableLiveData()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         searchViewModel = ViewModelProvider(requireActivity()).get(SearchViewModel::class.java)
@@ -49,12 +41,15 @@ class SearchFragment : Fragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        if(searchViewModel.query.value != "")
+        if(!searchViewModel.query.value.isNullOrEmpty()) //if got data from home fragment
         {
-            val searchItem = menu?.findItem(R.id.search)
+            val searchItem = menu.findItem(R.id.search)
             searchView = searchItem?.actionView as SearchView
+
             searchItem.expandActionView()
-            searchView.setQuery(searchViewModel.query.value, true)
+            searchView.isIconified = false
+            searchView.setQuery(searchViewModel.query.value, false)
+
         }
     }
 
@@ -66,7 +61,6 @@ class SearchFragment : Fragment() {
         searchView = searchItem?.actionView as SearchView
         searchView.isIconified = false
 
-        //searchView.setQuery(searchViewModel.text.toString(),true)
         val onClick = { query : String ->
              if(query.count() != 0) {
                  searchOptions.visibility = View.GONE
@@ -74,11 +68,11 @@ class SearchFragment : Fragment() {
                  val radioButton: View = sortByRadioGroup.findViewById(sortByRadioGroup.checkedRadioButtonId)
                  val idx: Int = sortByRadioGroup.indexOfChild(radioButton)
                  var sortBy = NewsAPI.SortBy.values()[idx].apiName
-                 var language = NewsAPI.FilterLanguage.values().find {
+                 var language = NewsAPI.Languages.values().find {
                      it.name == languageSelectSpinner.selectedItem
                  }
                  if(language == null)
-                     language = NewsAPI.FilterLanguage.English
+                     language = NewsAPI.Languages.English
 
                  var fromDateStr = fromDate.editableText.toString()
                  var toDateStr = toDate.editableText.toString()
@@ -124,8 +118,9 @@ class SearchFragment : Fragment() {
                 return true
             }
 
-            override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+            override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean { //on back click
                 searchOptions.visibility = View.VISIBLE
+                searchView.isIconified = true
                 return true
             }
 
@@ -154,14 +149,14 @@ class SearchFragment : Fragment() {
         fromDate = root.findViewById(R.id.fromDate)
         toDate = root.findViewById(R.id.toDate)
 
-        var items = NewsAPI.FilterLanguage.values().map { return@map it.name }
+        var items = NewsAPI.Languages.values().map { return@map it.name }
 
         languageSelectSpinner = root.findViewById(R.id.spinner) as Spinner
         var adapter : ArrayAdapter<String> =
             ArrayAdapter(requireContext(),android.R.layout.simple_spinner_dropdown_item, items)
         languageSelectSpinner.adapter = adapter
 
-        var defaultLanguageIndex= items.indexOf("English")
+        var defaultLanguageIndex= items.indexOf(NewsAPI.Languages.English.name)
         if(defaultLanguageIndex != -1)
             languageSelectSpinner.setSelection(defaultLanguageIndex)
 

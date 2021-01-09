@@ -91,7 +91,7 @@ internal object HeadlinesRepository {
         return headlines
     }
 
-    fun findHeadlinesFromNetwork(query: String, sortBy : String, language: NewsAPI.FilterLanguage, fromDateStr: String, toDateStr: String) : LiveData<List<Article>>
+    fun findHeadlinesFromNetwork(query: String, sortBy : String, language: NewsAPI.Languages, fromDateStr: String, toDateStr: String) : LiveData<List<Article>>
     {
         val client = client
         var call = client.findHeadlines(query, sortBy, language.code, fromDateStr, toDateStr)
