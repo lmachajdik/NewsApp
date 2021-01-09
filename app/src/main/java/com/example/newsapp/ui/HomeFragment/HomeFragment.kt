@@ -1,4 +1,4 @@
-package com.example.newsapp.ui.home
+package com.example.newsapp.ui.HomeFragment
 
 import android.content.res.Configuration
 import android.os.Bundle

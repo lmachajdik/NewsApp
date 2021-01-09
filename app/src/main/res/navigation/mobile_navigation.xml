@@ -10,7 +10,7 @@
     >
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.example.newsapp.ui.home.HomeFragment"
+        android:name="com.example.newsapp.ui.HomeFragment.HomeFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home" />
 

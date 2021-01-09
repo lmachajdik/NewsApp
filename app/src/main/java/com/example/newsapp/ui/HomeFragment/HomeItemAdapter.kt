@@ -1,4 +1,4 @@
-package com.example.newsapp.ui.home
+package com.example.newsapp.ui.HomeFragment
 
 import android.view.LayoutInflater
 import android.view.View

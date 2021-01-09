@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
@@ -16,6 +17,11 @@ import com.example.newsapp.NewsAdapter
 import com.example.newsapp.R
 import com.example.newsapp.network.NewsAPI
 import com.example.newsapp.repository.HeadlinesRepository
+import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
@@ -33,94 +39,142 @@ class SearchFragment : Fragment() {
     private lateinit var languageSelectSpinner : Spinner
     private lateinit var fromDate : EditText
     private lateinit var toDate : EditText
+    private lateinit var searchView: SearchView
+    private lateinit var searchItem: MenuItem
+    private lateinit var progressBar: ProgressBar
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         searchViewModel = ViewModelProvider(requireActivity()).get(SearchViewModel::class.java)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        if(!searchViewModel.query.value.isNullOrEmpty()) //if got data from home fragment
-        {
-            val searchItem = menu.findItem(R.id.search)
-            searchView = searchItem?.actionView as SearchView
+    fun searchQuery(query:String)
+    {
+        if(query.count() != 0) {
+            searchViewModel.setQuery("")
+            searchOptions.visibility = View.GONE
+            progressBar.visibility = View.VISIBLE
 
-            searchItem.expandActionView()
-            searchView.isIconified = false
-            searchView.setQuery(searchViewModel.query.value, false)
+            searchView.setQuery(query,false)
+            val radioButton: View = sortByRadioGroup.findViewById(sortByRadioGroup.checkedRadioButtonId)
+            val idx: Int = sortByRadioGroup.indexOfChild(radioButton)
+            val sortBy = NewsAPI.SortBy.values()[idx].apiName
+            var language = NewsAPI.Languages.values().find {
+                it.name == languageSelectSpinner.selectedItem
+            }
+            if(language == null)
+                language = NewsAPI.Languages.English
 
-        }
-    }
+            val fromDateStr = fromDate.editableText.toString()
+            val toDateStr = toDate.editableText.toString()
 
+            var success = false
 
-    lateinit var searchView: SearchView
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.search_menu, menu)
-        val searchItem = menu.findItem(R.id.search)
-        searchView = searchItem?.actionView as SearchView
-        searchView.isIconified = false
+            mAdapter.clear()
+            mAdapter.notifyDataSetChanged()
 
-        val onClick = { query : String ->
-             if(query.count() != 0) {
-                 searchOptions.visibility = View.GONE
-
-                 val radioButton: View = sortByRadioGroup.findViewById(sortByRadioGroup.checkedRadioButtonId)
-                 val idx: Int = sortByRadioGroup.indexOfChild(radioButton)
-                 val sortBy = NewsAPI.SortBy.values()[idx].apiName
-                 var language = NewsAPI.Languages.values().find {
-                     it.name == languageSelectSpinner.selectedItem
-                 }
-                 if(language == null)
-                     language = NewsAPI.Languages.English
-
-                 val fromDateStr = fromDate.editableText.toString()
-                 val toDateStr = toDate.editableText.toString()
-
-                val data= HeadlinesRepository.findHeadlinesFromNetwork(query, sortBy, language, fromDateStr, toDateStr)
-                data.observe(viewLifecycleOwner) {
-                    searchView.isIconified = false
-                    mAdapter = NewsAdapter(it)
-                    mAdapter.setOnItemClickListener(object :
-                        NewsAdapter.OnItemClickListener {
-                        override fun onItemClick(itemView: View?, position: Int) {
-                            val items = mAdapter.getItems()
-                            val url = items[position].url
-                            if (url != null && url.isNotEmpty()) {
-                                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                                startActivity(browserIntent)
+            var job = GlobalScope.launch {
+                val data = HeadlinesRepository.findHeadlinesFromNetwork(query, sortBy, language, fromDateStr, toDateStr)
+                withContext(Dispatchers.Main)
+                {
+                    data.observe(viewLifecycleOwner) {
+                        searchView.isIconified = false
+                        searchView.requestFocus()
+                        mAdapter = NewsAdapter(it)
+                        mAdapter.setOnItemClickListener(object :
+                            NewsAdapter.OnItemClickListener {
+                            override fun onItemClick(itemView: View?, position: Int) {
+                                val items = mAdapter.getItems()
+                                val url = items[position].url
+                                if (url != null && url.isNotEmpty()) {
+                                    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                    startActivity(browserIntent)
+                                }
                             }
-                        }
-                    })
+                        })
 
-                    mAdapter.notifyDataSetChanged()
-                    list.adapter = mAdapter
+                        mAdapter.notifyDataSetChanged()
+                        list.adapter = mAdapter
+                        success = true
+                    }
                 }
             }
+            object : CountDownTimer(3000, 500) {
+                override fun onFinish() {
+                    if(!success) {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.internet_connection_problem),
+                            Toast.LENGTH_LONG
+                        ).show()
+                        job.cancel()
+                        searchItem.collapseActionView()
+                    }
+
+                    progressBar.visibility = View.GONE
+                }
+
+                override fun onTick(p0: Long) {
+                    if(success) { //if finished, we can cancel timer
+                        progressBar.visibility = View.GONE
+                        this.cancel()
+                    }
+                }
+            }.start()
         }
+        }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        searchView.isIconified = false
+        searchItem.expandActionView()
+        searchView.requestFocus()
+
+        if(!searchViewModel.query.value.isNullOrEmpty()) //if got data from home fragment
+        {
+            searchItem = menu.findItem(R.id.search)
+            searchView = searchItem?.actionView as SearchView
+            searchView.setQuery(searchViewModel.query.value, true)
+
+        }
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.search_menu, menu)
+        searchItem = menu.findItem(R.id.search)
+        searchOptions.visibility = View.VISIBLE
+        progressBar_cyclic.visibility = View.GONE
+        searchView = searchItem?.actionView as SearchView
+        searchView.isIconified = true
+
+
         val queryTextListener: SearchView.OnQueryTextListener =
             object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(s: String): Boolean {
                     if(s.count() != 0) {
-                        onClick(s)
+                        searchQuery(s)
                     }
                     return true
                 }
 
                 override fun onQueryTextChange(s: String): Boolean {
-                    return false
+                    return true
                 }
             }
 
         searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener
         {
-            override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
+            override fun onMenuItemActionExpand(p0: MenuItem?): Boolean { //on search click
+                searchView.isIconified = false
+                println(searchItem)
+                println(p0)
                 return true
             }
 
             override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean { //on back click
                 searchOptions.visibility = View.VISIBLE
-                searchView.isIconified = true
+               // searchView.isIconified = false
                 return true
             }
 
@@ -130,7 +184,7 @@ class SearchFragment : Fragment() {
         searchView.setOnClickListener { //menu item search icon in toolbar
             val query = searchView.query.toString()
             if(query.count() != 0)
-                onClick(query)
+                searchQuery(query)
         }
     }
 
@@ -148,6 +202,7 @@ class SearchFragment : Fragment() {
         sortByRadioGroup = root.findViewById(R.id.sortBy_radioGroup)
         fromDate = root.findViewById(R.id.fromDate)
         toDate = root.findViewById(R.id.toDate)
+        progressBar = root.findViewById(R.id.progressBar_cyclic)
 
         val items = NewsAPI.Languages.values().map { return@map it.name }
 

@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
                     items[i++] = it.name.replace('_',' ')
                 }
                 builder
-                    .setTitle("Select Country")
+                    .setTitle(getString(R.string.menu_select_country))
                     .setItems(items, DialogInterface.OnClickListener { _, pos ->
                         NewsAPI.NewsCountry = NewsAPI.Countries.valueOf(arr[pos].name)
                         NewsFragment.currentInstance?.updateDataFromRepository() //fetch data from repository for currently selected country

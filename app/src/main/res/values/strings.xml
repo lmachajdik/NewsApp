@@ -37,4 +37,5 @@
     <string name="home_search_hint">Type something here..</string>
     <string name="search_hint_start_date">Start date</string>
     <string name="search_hint_end_date">End date</string>
+    <string name="internet_connection_problem">There was a problem connecting to network</string>
 </resources>

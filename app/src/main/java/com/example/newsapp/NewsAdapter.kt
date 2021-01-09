@@ -98,6 +98,11 @@ class NewsAdapter (private val mArticles: List<Article>) : RecyclerView.Adapter<
         return mArticles.size
     }
 
+    fun clear()
+    {
+        (mArticles as ArrayList).clear()
+    }
+
     fun getItems() : List<Article>
     {
         return this.mArticles

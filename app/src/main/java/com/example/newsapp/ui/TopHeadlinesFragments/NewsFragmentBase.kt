@@ -73,7 +73,7 @@ abstract class NewsFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
                     Toast.makeText(
                         context,
-                        "There was a problem connecting to network",
+                        getString(R.string.internet_connection_problem),
                         Toast.LENGTH_LONG
                     ).show()
                     job.cancel()
